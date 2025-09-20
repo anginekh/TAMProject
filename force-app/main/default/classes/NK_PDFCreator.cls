@@ -27,9 +27,11 @@ public with sharing class NK_PDFCreator{
         List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
         // Set your variable (name must match variable used in your PDF Butler template)
         Mietvertrag__c mv = [SELECT Id, Wohnung__r.Objekt__c, Mieter__r.Name FROM Mietvertrag__c WHERE Id =: mietvertragList[0].Id];
-        //cdm.inputMap = new Map<String, String>();
-        //cdm.inputMap.put('ObjektId', mv.Wohnung__r.Objekt__c);
-        //cdm.inputMap.put('LastYear', String.valueOf(Date.today().year()-1));
+        Map<String, Object> inputMap = new Map<String, Object>();
+        //Add a variable of different types - we will process the type correctly
+        //More input on variables: https://www.pdfbutler.com/academy.html?q=Actionable%20run%20APEX%20Class
+        inputMap.put('ObjektId', mv.Wohnung__r.Objekt__c);
+        inputMap.put('LastYear', String.valueOf(Date.today().year()-1));
 
         Map <Id, ContentVersion> mietvertragIdCVMap1 = new Map <Id, ContentVersion> ();
         Map <Id, ContentVersion> mietvertragIdCVMap2 = new Map <Id, ContentVersion> ();
@@ -93,7 +95,7 @@ public with sharing class NK_PDFCreator{
                 // Call PDF Butler
                 if (Test.isRunningTest()) {
                     result = null;
-                } else { result = cadmus_core.ConvertController.convertWithWrapper(cdm);
+                } else { result = cadmus_core.ConvertController.convertWithWrapperAndInputMap(cdm, inputMap);
                 }
                 if (result == null || result.result == 'FAILED') {
                     documentCreationFailed = true;
@@ -113,7 +115,7 @@ public with sharing class NK_PDFCreator{
                     // generate Excel version
                     cdm2.docConfigId = docConfigMap.get('NK_Abrechnung_Excel').Id;
                     cdm2.objectId = m.Id;
-                    result2 = cadmus_core.ConvertController.convertWithWrapper(cdm2);
+                    result2 = cadmus_core.ConvertController.convertWithWrapperAndInputMap(cdm2, inputMap);
                     if (result2 == null || result.result == 'FAILED') { documentCreationFailed = true;
                         System.debug('im here 8 : error');
                     } else {
