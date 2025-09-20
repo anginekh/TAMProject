@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sorted>false</sorted>
+    <standardValue>
+        <fullName>Allgemeine Anfragen</fullName>
+        <default>false</default>
+        <label>Allgemeine Anfragen</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Bank</fullName>
+        <default>false</default>
+        <label>Bank</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Buchhaltung</fullName>
+        <default>false</default>
+        <label>Buchhaltung</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Dokumente an Mieter</fullName>
+        <default>false</default>
+        <label>Dokumente an Mieter</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Handwerkeraufträge</fullName>
+        <default>false</default>
+        <label>Handwerkeraufträge</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Handwerkerkontrolle</fullName>
+        <default>false</default>
+        <label>Handwerkerkontrolle</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Mietencheck</fullName>
+        <default>false</default>
+        <label>Mietencheck</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Nebenkosten</fullName>
+        <default>false</default>
+        <label>Nebenkosten</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Neue Objekte</fullName>
+        <default>false</default>
+        <label>Neue Objekte</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+    <standardValue>
+        <fullName>Reparaturen</fullName>
+        <default>false</default>
+        <label>Reparaturen</label>
+        <cssExposed>false</cssExposed>
+    </standardValue>
+</StandardValueSet>

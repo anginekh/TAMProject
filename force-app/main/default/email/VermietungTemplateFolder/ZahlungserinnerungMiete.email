@@ -1,0 +1,6 @@
+Hallo {!Account.Anrede__c} {!Account.Nachname__c},
+
+ich habe gerade festgestellt, dass die Miete für den aktuellen Monat noch fehlt.
+Bitte checken Sie das kurzfristig.
+
+Holm Bassler

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="IlluminatedCloud" name="Illuminated Cloud">
+      <configuration>
+        <option name="connectionName" value="Angine_Sandbox" />
+        <option name="connectionType" value="OAUTH" />
+        <option name="defaultSourceRootUrl" value="file://$MODULE_DIR$/force-app" />
+        <option name="moduleContents">
+          <ModuleContents>
+            <option name="wildcardMetadataTypes">
+              <list>
+                <option value="ApexClass" />
+                <option value="ApexTrigger" />
+                <option value="AppMenu" />
+                <option value="AutoResponseRule" />
+                <option value="BusinessProcess" />
+                <option value="ChatterExtension" />
+                <option value="CustomField" />
+                <option value="CustomLabel" />
+                <option value="CustomLabels" />
+                <option value="CustomMetadata" />
+                <option value="CustomNotificationType" />
+                <option value="CustomObject" />
+                <option value="CustomTab" />
+                <option value="Document" />
+                <option value="FieldSet" />
+                <option value="FlexiPage" />
+                <option value="Flow" />
+                <option value="FlowDefinition" />
+                <option value="FlowTest" />
+                <option value="GlobalValueSet" />
+                <option value="Group" />
+                <option value="InstalledPackage" />
+                <option value="PermissionSet" />
+                <option value="PermissionSetGroup" />
+                <option value="SharingRules" />
+              </list>
+            </option>
+          </ModuleContents>
+        </option>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/config" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/force-app" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/.sfdx" />
+      <excludeFolder url="file://$MODULE_DIR$/.husky/.sf" />
+    </content>
+    <orderEntry type="jdk" jdkName="IlluminatedCloud (TAMProject/Angine_Sandbox)" jdkType="IlluminatedCloud" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

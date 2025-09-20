@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BetriebskostenTotal__c</fullName>
+    <description>Summe aller unten aufgeführten Kostenpositionen außer Gas.</description>
+    <formula>Allgemeinstrom__c  + EntwaesserungNiederschlag__c +  Gebaudeversicherung__c + Grundsteuer__c +   Haftpflicht__c + Kabel__c +  Muellabfuhr__c +  Schornsteinfeger__c +  Strassenreinigung_Winterdienst__c +  Treppenhausreinigung__c +  Wartung__c +  Wasserversorgung__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Betriebskosten Total</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

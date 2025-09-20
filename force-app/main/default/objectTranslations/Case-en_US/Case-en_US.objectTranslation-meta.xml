@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <recordTypes>
+        <label><!-- Andere --></label>
+        <name>Andere</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- HandwerkerCase --></label>
+        <name>HandwerkerCase</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- MieterCase --></label>
+        <name>MieterCase</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>CantAddBothWohnungAndObjekt</name>
+    </validationRules>
+</CustomObjectTranslation>

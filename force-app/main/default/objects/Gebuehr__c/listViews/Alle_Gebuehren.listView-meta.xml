@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Alle_Gebuehren</fullName>
+    <columns>NAME</columns>
+    <columns>Firma__c</columns>
+    <columns>Account__c</columns>
+    <columns>Betrag__c</columns>
+    <columns>Bezahlt__c</columns>
+    <columns>Typ__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <label>Alle Gebühren</label>
+</ListView>

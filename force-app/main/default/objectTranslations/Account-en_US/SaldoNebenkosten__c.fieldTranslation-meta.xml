@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help>
+        <!-- Offener Saldo der Nebenkostenabrechnung aus Vorjahren.
+&apos;Nebenkosten bezahlt&apos; - (&apos;Betriebskosten Total&apos; * Wohnflächenanteil - Gesamtheizkosten Wohnung). -->
+    </help>
+    <label><!-- Saldo (Nebenkosten) --></label>
+    <name>SaldoNebenkosten__c</name>
+</CustomFieldTranslation>

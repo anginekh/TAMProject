@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <environments>Default</environments>
+    <formulas>
+        <name>KMBezahlt</name>
+        <dataType>Currency</dataType>
+        <expression>IF ({!$Record.InsgesamtBezahlt__c} &gt; {!SollKaltmiete} , {!SollKaltmiete}, {!$Record.InsgesamtBezahlt__c} )</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>SollKaltmiete</name>
+        <dataType>Currency</dataType>
+        <expression>IF(ISBLANK({!$Record.Mietvertrag__r.Ausgezogen__c}), IF(AND(NOT(ISBLANK({!$Record.Mietvertrag__r.Eingezogen__c})), {!$Record.Mietvertrag__r.Eingezogen__c} &gt;= Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1) ), IF(OR(ISBLANK({!$Record.Mietvertrag__r.KMEhDatum__c}) , {!$Record.Mietvertrag__r.KMEhDatum__c} &lt; {!$Record.Mietvertrag__r.Eingezogen__c}), 
+
+{!$Record.Mietvertrag__r.KaltmieteNeu__c}* (MONTH(TODAY()) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) ,  
+
+IF ({!$Record.Mietvertrag__r.KMEhDatum__c} &gt; TODAY(), {!$Record.Mietvertrag__r.KaltmieteAlt__c}* (MONTH(TODAY()) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) ,
+
+{!$Record.Mietvertrag__r.KaltmieteAlt__c}* (MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c})) + {!$Record.Mietvertrag__r.KaltmieteNeu__c} * (MONTH(TODAY()) - MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) +1))), 
+
+IF(OR(ISBLANK({!$Record.Mietvertrag__r.KMEhDatum__c}) , {!$Record.Mietvertrag__r.KMEhDatum__c} &lt; Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1)), 
+
+{!$Record.Mietvertrag__r.KaltmieteNeu__c}* MONTH(TODAY()) , IF ({!$Record.Mietvertrag__r.KMEhDatum__c} &gt; TODAY(), {!$Record.Mietvertrag__r.KaltmieteAlt__c} * MONTH (TODAY()) ,
+
+{!$Record.Mietvertrag__r.KaltmieteAlt__c}* (MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) -1) + {!$Record.Mietvertrag__r.KaltmieteNeu__c} * (MONTH(TODAY()) - MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) +1)))), 
+ 
+ 
+IF(AND(NOT(ISBLANK({!$Record.Mietvertrag__r.Eingezogen__c})), {!$Record.Mietvertrag__r.Eingezogen__c} &gt;= Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1) ), IF(OR(ISBLANK({!$Record.Mietvertrag__r.KMEhDatum__c}) , {!$Record.Mietvertrag__r.KMEhDatum__c} &lt; {!$Record.Mietvertrag__r.Eingezogen__c}), 
+
+{!$Record.Mietvertrag__r.KaltmieteNeu__c}* (MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) , IF ({!$Record.Mietvertrag__r.KMEhDatum__c} &gt; TODAY(), {!$Record.Mietvertrag__r.KaltmieteAlt__c} * (MONTH(TODAY()) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) ,
+
+{!$Record.Mietvertrag__r.KaltmieteAlt__c}* (MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c})) + {!$Record.Mietvertrag__r.KaltmieteNeu__c} * (MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) - MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) +1))), 
+
+
+
+IF(OR(ISBLANK({!$Record.Mietvertrag__r.KMEhDatum__c}) , {!$Record.Mietvertrag__r.KMEhDatum__c} &lt; Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1)), 
+
+{!$Record.Mietvertrag__r.KaltmieteNeu__c}* MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) , IF ({!$Record.Mietvertrag__r.KMEhDatum__c} &gt; TODAY(), {!$Record.Mietvertrag__r.KaltmieteAlt__c}  * MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) ,
+
+
+{!$Record.Mietvertrag__r.KaltmieteAlt__c}* (MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) -1) + {!$Record.Mietvertrag__r.KaltmieteNeu__c} * (MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) - MONTH({!$Record.Mietvertrag__r.KMEhDatum__c}) +1)))))</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>SollNebenkosten</name>
+        <dataType>Currency</dataType>
+        <expression>IF(ISBLANK({!$Record.Mietvertrag__r.Ausgezogen__c}), IF(AND(NOT(ISBLANK({!$Record.Mietvertrag__r.Eingezogen__c})), {!$Record.Mietvertrag__r.Eingezogen__c} &gt;= Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1) ), IF(OR(ISBLANK({!$Record.Mietvertrag__r.NBKEhDatum__c}) , {!$Record.Mietvertrag__r.NBKEhDatum__c} &lt; {!$Record.Mietvertrag__r.Eingezogen__c}), 
+
+({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c}) * (MONTH(TODAY()) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) , IF ({!$Record.Mietvertrag__r.NBKEhDatum__c} &gt; TODAY(), ({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c}) * (MONTH(TODAY()) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) ,
+
+({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c}) * (MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c})) + ({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c}) * (MONTH(TODAY()) - MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) +1))), 
+
+IF(OR(ISBLANK({!$Record.Mietvertrag__r.NBKEhDatum__c}) , {!$Record.Mietvertrag__r.NBKEhDatum__c} &lt; Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1)), 
+
+({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c})* MONTH(TODAY()) , IF ({!$Record.Mietvertrag__r.NBKEhDatum__c} &gt; TODAY(), ({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c}) * MONTH (TODAY()) ,
+
+({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c})* (MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) -1) + ({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c}) * (MONTH(TODAY()) - MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) +1)))), 
+
+ 
+IF(AND(NOT(ISBLANK({!$Record.Mietvertrag__r.Eingezogen__c})), {!$Record.Mietvertrag__r.Eingezogen__c} &gt;= Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1) ), IF(OR(ISBLANK({!$Record.Mietvertrag__r.NBKEhDatum__c}) , {!$Record.Mietvertrag__r.NBKEhDatum__c} &lt; {!$Record.Mietvertrag__r.Eingezogen__c}), 
+
+({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c})* (MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) , IF ({!$Record.Mietvertrag__r.NBKEhDatum__c} &gt; TODAY(), ({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c}) * (MONTH(TODAY()) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c}) +1) ,
+
+({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c})* (MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) - MONTH( {!$Record.Mietvertrag__r.Eingezogen__c})) + ({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c}) * (MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) - MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) +1))), 
+
+IF(OR(ISBLANK({!$Record.Mietvertrag__r.NBKEhDatum__c}) , {!$Record.Mietvertrag__r.NBKEhDatum__c} &lt; Date (VALUE(TEXT({!$Record.Jahr__c})), 1, 1)), 
+
+({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c})* MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) , IF ({!$Record.Mietvertrag__r.NBKEhDatum__c} &gt; TODAY(), ({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c}) * MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) ,
+
+({!$Record.Mietvertrag__r.BetriebskostenAlt__c} + {!$Record.Mietvertrag__r.HeizkostenAlt__c})* (MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) -1) + ({!$Record.Mietvertrag__r.BetriebskostenNeu__c} + {!$Record.Mietvertrag__r.HeizkostenNeu__c}) * (MONTH({!$Record.Mietvertrag__r.Ausgezogen__c}) - MONTH({!$Record.Mietvertrag__r.NBKEhDatum__c}) +1)))))</expression>
+        <scale>2</scale>
+    </formulas>
+    <interviewLabel>CalculateSollKMSollNKAndKMBezahlt {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>VMT_MIETZAHLUNG_MONTHLYJOB_CalculateSollKMSollNKAndKMBezahlt</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>UpdateMietzahlungRecord_UPDATE</name>
+        <label>Update Mietzahlung Record</label>
+        <locationX>176</locationX>
+        <locationY>252</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Mietvertrag__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>KaltmieteBezahlt__c</field>
+            <value>
+                <elementReference>KMBezahlt</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SollKaltmiete__c</field>
+            <value>
+                <elementReference>SollKaltmiete</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SollNebenkosten__c</field>
+            <value>
+                <elementReference>SollNebenkosten</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>UpdateMietzahlungRecord_UPDATE</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>IsFirstDayOfMonth__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Mietvertrag__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ISThisYear__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Mietzahlung__c</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2024-10-01</startDate>
+            <startTime>00:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>Mietzahlungist</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Mietvertrag__c</objectType>
+    </variables>
+</Flow>

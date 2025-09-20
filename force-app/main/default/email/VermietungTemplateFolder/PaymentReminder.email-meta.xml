@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>false</available>
+    <encodingKey>UTF-8</encodingKey>
+    <letterhead>TAMLetterhead</letterhead>
+    <name>PaymentReminder</name>
+    <style>formalLetter</style>
+    <subject>Ihre Miete fehlt</subject>
+    <textOnly>Sehr geehrte/r {!Mietzahlung__c.Mietername__c},
+
+wir haben festgestellt, dass Sie mit Ihrer Miete mit insgesamt {!Mietzahlung__c.Differenz__c} Euro in Verzug sind.
+
+Bitte überweisen den Fehlbetrag schnellstmöglich auf die unten aufgeführte Bankverbindung.
+
+IBAN: {!Mietzahlung__c.ObjektIBAN__c}
+
+Mit freundlichen Grüßen,
+{!Mietzahlung__c.Firmenname__c}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

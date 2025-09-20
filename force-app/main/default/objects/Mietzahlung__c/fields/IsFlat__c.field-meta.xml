@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsFlat__c</fullName>
+    <formula>IF(OR (CONTAINS( TEXT(Mietvertrag__r.Wohnung__r.Wohneinheit__c), &apos;Garage&apos;), TEXT(Mietvertrag__r.Wohnung__r.Wohneinheit__c) = &apos;Carport&apos;, TEXT(Mietvertrag__r.Wohnung__r.Wohneinheit__c) =&apos;Stellplatz&apos;), FALSE, TRUE)</formula>
+    <label>IsFlat</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

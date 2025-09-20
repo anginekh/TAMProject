@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ALG</fullName>
+    <columns>NAME</columns>
+    <columns>Objektnummer__c</columns>
+    <columns>Gesamtwohnflaeche__c</columns>
+    <columns>Adresse__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Firma__c</field>
+        <operation>contains</operation>
+        <value>ALG</value>
+    </filters>
+    <label>ALG Objekte</label>
+</ListView>

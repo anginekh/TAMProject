@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Differenz__c</fullName>
+    <description>InsgesamtBezahlt__c - Ganzjahresgesamtmiete__c</description>
+    <formula>InsgesamtBezahlt__c - SollGesamtmiete__c</formula>
+    <inlineHelpText>&apos;Insgesamt bezahlt&apos; minus &apos;Soll-Gesamtmiete&apos;. Bei Minusbetrag ist der Mieter in Verzug.</inlineHelpText>
+    <label>Differenz</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

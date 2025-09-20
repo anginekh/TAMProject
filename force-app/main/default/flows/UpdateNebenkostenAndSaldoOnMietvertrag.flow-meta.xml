@@ -1,0 +1,1261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <assignments>
+        <name>AddMieterIdToAList_ASSIGNMENT</name>
+        <label>Add Mieter Id to a List</label>
+        <locationX>352</locationX>
+        <locationY>1298</locationY>
+        <assignmentItems>
+            <assignToReference>MieterIdList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ForEachMietvertrag_LOOP.Mieter__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>MietzahlungForMieter_FILTER</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AddMietvertragIdToAJSON_ASSIGNMENT</name>
+        <label>Add Mietvertrag Id to a JSON</label>
+        <locationX>264</locationX>
+        <locationY>782</locationY>
+        <assignmentItems>
+            <assignToReference>MietvertragIdListJSON</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ForEachMietzahlung_LOOP.Mietvertrag__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ForEachMietzahlung_LOOP</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AddMietvertragIdToAList_ASSIGNMENT</name>
+        <label>Add Mietvertrag Id to a List</label>
+        <locationX>264</locationX>
+        <locationY>674</locationY>
+        <assignmentItems>
+            <assignToReference>MietvertragIdList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ForEachMietzahlung_LOOP.Mietvertrag__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>AddMietvertragIdToAJSON_ASSIGNMENT</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AddRecordToMietvertragList_ASSIGNMENT</name>
+        <label>Add Record To MietvertragList</label>
+        <locationX>352</locationX>
+        <locationY>2654</locationY>
+        <assignmentItems>
+            <assignToReference>MietvertraegeList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ForEachMietvertrag_LOOP</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ForEachMietvertrag_LOOP</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AddRecordToMietzahlungsList_ASSIGNMENT</name>
+        <label>Add Record To Mietzahlungs List</label>
+        <locationX>440</locationX>
+        <locationY>1838</locationY>
+        <assignmentItems>
+            <assignToReference>MietzahlungsList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ForEachMietzahlungForMieter_LOOP</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ForEachMietzahlungForMieter_LOOP</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AddRecordToOffeneGebuehrenList_ASSIGNMENT</name>
+        <label>Add Record to OffeneGebuehren List</label>
+        <locationX>264</locationX>
+        <locationY>3170</locationY>
+        <assignmentItems>
+            <assignToReference>OffeneGebuehrenList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>EachOffeneGebuehr_LOOP</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>EachOffeneGebuehr_LOOP</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>SetAnteilFieldsOfNKToMietzahlung</name>
+        <label>Set Anteil Fields of NK to Mietzahlung</label>
+        <locationX>440</locationX>
+        <locationY>1622</locationY>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilAllgemeinstrom__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Allgemeinstrom</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilEntwaesserungNiederschlag__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_EntwaesserungNiederschlag</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilGebaudeversicherung__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Gebaudeversicherung</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilGrundsteuer__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Grundsteuer</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilHaftpflicht__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Haftpflicht</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilKabel__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Kabel</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilMuellabfuhr__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Muellabfuhr</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilSchornsteinfeger__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Schornsteinfeger</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilStrassenreinigung_Winterdienst__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Strassenreinigung_Winterdienst</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilTreppenhausreinigung__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Treppenhausreinigung</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilWartung__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Wartung</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietzahlungForMieter_LOOP.NK_AnteilWasserversorgung__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Anteil_Wasserversorgung</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>UpdateBetriebskostenOnMietvertrag_ASSIGNMENT</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>SetHasHeizkostenTrue_ASSIGNMENT</name>
+        <label>Set Has Heizkosten True</label>
+        <locationX>440</locationX>
+        <locationY>2246</locationY>
+        <assignmentItems>
+            <assignToReference>HasHeizkosten</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Saldo2</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>UpdateHeizkostenOnMietvertrag_ASSIGNMENT</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>SetNebenkostenDurchgefuehrt_ASSIGNMENT</name>
+        <label>Set Nebenkosten durchgeführt</label>
+        <locationX>176</locationX>
+        <locationY>350</locationY>
+        <assignmentItems>
+            <assignToReference>recordId.NebenkostenabrechnungDurchgefuehrt__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>GetMietzahlungRecord_GET</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>SetZahlungsstatusToBerechnetinNKSaldo_ASSIGNMENT</name>
+        <label>Set Zahlungsstatus To Berechnet in NK-Saldo</label>
+        <locationX>264</locationX>
+        <locationY>3062</locationY>
+        <assignmentItems>
+            <assignToReference>EachOffeneGebuehr_LOOP.Zahlungsstatus__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Berechnet in NK-Saldo</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>AddRecordToOffeneGebuehrenList_ASSIGNMENT</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>UpdateBetriebskostenOnMietvertrag_ASSIGNMENT</name>
+        <label>Update Betriebskosten on Mietvertrag</label>
+        <locationX>440</locationX>
+        <locationY>1730</locationY>
+        <assignmentItems>
+            <assignToReference>ForEachMietvertrag_LOOP.BetriebskostenAlt__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ForEachMietvertrag_LOOP.BetriebskostenNeu__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietvertrag_LOOP.BetriebskostenNeu__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Betriebskosten</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Saldo1</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SaldoPartial</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietvertrag_LOOP.NBKEhDatum__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>NKChangeDate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>OffeneGebuehren</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ForEachMietvertrag_LOOP.Mieter__r.OffeneGebuehren__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>AddRecordToMietzahlungsList_ASSIGNMENT</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>UpdateHeizkostenOnMietvertrag_ASSIGNMENT</name>
+        <label>Update Heizkosten on Mietvertrag</label>
+        <locationX>440</locationX>
+        <locationY>2354</locationY>
+        <assignmentItems>
+            <assignToReference>ForEachMietvertrag_LOOP.HeizkostenAlt__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ForEachMietvertrag_LOOP.HeizkostenNeu__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ForEachMietvertrag_LOOP.HeizkostenNeu__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Heizkosten</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ForEachHeizkostenForMieter_LOOP</targetReference>
+        </connector>
+    </assignments>
+    <collectionProcessors>
+        <name>HeizkostenForMieter_FILTER</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Heizkosten for Mieter</label>
+        <locationX>352</locationX>
+        <locationY>2030</locationY>
+        <assignNextValueToReference>currentItem_HeizkostenForMieter_FILTER</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>GetHeizkostenRecord_GET</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_HeizkostenForMieter_FILTER.Mietvertrag__c</leftValueReference>
+            <operator>EqualTo</operator>
+            <rightValue>
+                <elementReference>ForEachMietvertrag_LOOP.Id</elementReference>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>ForEachHeizkostenForMieter_LOOP</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <name>MietzahlungForMieter_FILTER</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Mietzahlung For Mieter</label>
+        <locationX>352</locationX>
+        <locationY>1406</locationY>
+        <assignNextValueToReference>currentItem_MietzahlungForMieter_FILTER</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>GetMietzahlungRecord_GET</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_MietzahlungForMieter_FILTER.Mieter__c</leftValueReference>
+            <operator>EqualTo</operator>
+            <rightValue>
+                <elementReference>ForEachMietvertrag_LOOP.Mieter__c</elementReference>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>ForEachMietzahlungForMieter_LOOP</targetReference>
+        </connector>
+    </collectionProcessors>
+    <environments>Default</environments>
+    <formulas>
+        <name>Anteil_Allgemeinstrom</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Allgemeinstrom__c} * {!Wohnflaechenanteil} /100/ 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Allgemeinstrom__c} * {!Wohnflaechenanteil} /100/ 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Allgemeinstrom__c} * {!Wohnflaechenanteil} /100/ 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Allgemeinstrom__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_EntwaesserungNiederschlag</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.EntwaesserungNiederschlag__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.EntwaesserungNiederschlag__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.EntwaesserungNiederschlag__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.EntwaesserungNiederschlag__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Gebaudeversicherung</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Gebaudeversicherung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Gebaudeversicherung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Gebaudeversicherung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Gebaudeversicherung__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Grundsteuer</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Grundsteuer__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Grundsteuer__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Grundsteuer__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Grundsteuer__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Haftpflicht</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Haftpflicht__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Haftpflicht__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Haftpflicht__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Haftpflicht__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Kabel</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Kabel__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Kabel__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Kabel__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Kabel__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Muellabfuhr</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Muellabfuhr__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Muellabfuhr__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Muellabfuhr__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Muellabfuhr__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Schornsteinfeger</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Schornsteinfeger__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Schornsteinfeger__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Schornsteinfeger__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Schornsteinfeger__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Strassenreinigung_Winterdienst</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Strassenreinigung_Winterdienst__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Strassenreinigung_Winterdienst__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Strassenreinigung_Winterdienst__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Strassenreinigung_Winterdienst__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Treppenhausreinigung</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Treppenhausreinigung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Treppenhausreinigung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Treppenhausreinigung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Treppenhausreinigung__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Wartung</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Wartung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Wartung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Wartung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Wartung__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Anteil_Wasserversorgung</name>
+        <dataType>Currency</dataType>
+        <expression>IF (
+  AND(
+    NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), 
+    {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})),  
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Wasserversorgung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1), 
+    {!recordId.Wasserversorgung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) + 1)
+  ), 
+  IF(
+    AND(
+      NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE(VALUE(TEXT({!recordId.Jahr__c})), 1, 1), 
+      {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE(VALUE(TEXT({!recordId.Jahr__c})) + 1, 1, 1)
+    ),  
+    {!recordId.Wasserversorgung__c} * {!Wohnflaechenanteil}/100 / 12 * 
+      MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}), 
+    {!recordId.Wasserversorgung__c} * {!Wohnflaechenanteil}/100
+  )
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <description>DONT TUCH !! checks if new betriebskosten is higher than the previous BK, if yes takes the new BK, rounds it up to 5 then overwrites to BK. if not, keeps the previous BK.</description>
+        <name>Betriebskosten</name>
+        <dataType>Currency</dataType>
+        <expression>IF({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c}/100) / 12 &gt; {!ForEachMietvertrag_LOOP.BetriebskostenNeu__c}, if ( MOD({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c}/100) / 12,5) &gt; 0, {!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c}/100) / 12- MOD({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c}/100) / 12,5) +5 ,  {!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c}/100) / 12 - MOD({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c}/100) / 12,5)), {!ForEachMietvertrag_LOOP.BetriebskostenNeu__c})</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Heizkosten</name>
+        <dataType>Currency</dataType>
+        <expression>IF({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c} / 12 &gt; {!ForEachMietvertrag_LOOP.HeizkostenNeu__c}, if ( MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c}/ 12,5) &gt; 0, {!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c}/ 12- MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c} / 12,5) +5 , {!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c}/ 12 - MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c} / 12,5)), {!ForEachMietvertrag_LOOP.HeizkostenNeu__c})</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <description>the filed varies based on the year</description>
+        <name>NebenkostenBezahlt</name>
+        <dataType>Currency</dataType>
+        <expression>IF(ISPICKVAL({!recordId.Jahr__c} , &quot;2024&quot;),{!ForEachMietzahlungForMieter_LOOP.NebenkostenBezahlt2024__c} , {!ForEachMietzahlungForMieter_LOOP.NebenkostenBezahlt__c})</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>NKChangeDate</name>
+        <dataType>Date</dataType>
+        <expression>DATE(YEAR(TODAY()),MONTH(TODAY())+2,1)</expression>
+    </formulas>
+    <formulas>
+        <name>SaldoFinale</name>
+        <dataType>Currency</dataType>
+        <expression>IF ({!HasHeizkosten} = TRUE ,{!Saldo1} - {!Saldo2},{!Saldo1}  ) - {!OffeneGebuehren}</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>SaldoPartial</name>
+        <dataType>Currency</dataType>
+        <expression>IF (AND (NOT(ISBLANK({!ForEachMietvertrag_LOOP.Eingezogen__c})), {!ForEachMietvertrag_LOOP.Eingezogen__c} &gt; DATE (VALUE(TEXT({!recordId.Jahr__c})), 1, 1)) , IF (AND (NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c} )),  {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE (VALUE(TEXT({!recordId.Jahr__c})), 1, 1), {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE (VALUE(TEXT({!recordId.Jahr__c})) +1, 1, 1)),  {!NebenkostenBezahlt} - ({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c} /100) / 12 * (MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c}) - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) +1)) , {!NebenkostenBezahlt} - ({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c} /100) / 12 * (12 - MONTH({!ForEachMietvertrag_LOOP.Eingezogen__c}) +1))), 
+
+IF (AND (NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), AND( {!ForEachMietvertrag_LOOP.Ausgezogen__c} &gt; DATE (VALUE(TEXT({!recordId.Jahr__c})), 1, 1), {!ForEachMietvertrag_LOOP.Ausgezogen__c} &lt; DATE (VALUE(TEXT({!recordId.Jahr__c})) +1, 1, 1))),  {!NebenkostenBezahlt} - ({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c} /100) / 12 * MONTH({!ForEachMietvertrag_LOOP.Ausgezogen__c})) , {!NebenkostenBezahlt} - ({!recordId.BetriebskostenTotal__c} * ({!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c} /100)))
+ )</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Wohnflaechenanteil</name>
+        <dataType>Number</dataType>
+        <expression>{!ForEachMietvertrag_LOOP.Wohnflaechenanteil__c}</expression>
+        <scale>2</scale>
+    </formulas>
+    <interviewLabel>UpdateSaldoAndNebenkostenOnMietvertrag {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>VMT_NEBENKOSTEN_UpdateNebenkostenAndSaldoOnMietvertrag</label>
+    <loops>
+        <name>EachOffeneGebuehr_LOOP</name>
+        <label>Each Offene Gebuehr</label>
+        <locationX>176</locationX>
+        <locationY>2954</locationY>
+        <collectionReference>GetOffeneGebuehrenRecords_GET</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>SetZahlungsstatusToBerechnetinNKSaldo_ASSIGNMENT</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>UpdateOffeneGebuehren_UPDATE</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>ForEachHeizkostenForMieter_LOOP</name>
+        <label>For Each Heizkosten for Mieter</label>
+        <locationX>352</locationX>
+        <locationY>2138</locationY>
+        <collectionReference>HeizkostenForMieter_FILTER</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>SetHasHeizkostenTrue_ASSIGNMENT</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>CreateSaldoRecord_CREATE</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>ForEachMietvertrag_LOOP</name>
+        <label>For Each Mietvertrag</label>
+        <locationX>176</locationX>
+        <locationY>1190</locationY>
+        <collectionReference>GetMietvertragRecord_GET</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>AddMieterIdToAList_ASSIGNMENT</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>GetOffeneGebuehrenRecords_GET</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>ForEachMietzahlung_LOOP</name>
+        <label>For Each Mietzahlung</label>
+        <locationX>176</locationX>
+        <locationY>566</locationY>
+        <collectionReference>GetMietzahlungRecord_GET</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>AddMietvertragIdToAList_ASSIGNMENT</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>GetMietvertragRecord_GET</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>ForEachMietzahlungForMieter_LOOP</name>
+        <label>For Each Mietzahlung for Mieter</label>
+        <locationX>352</locationX>
+        <locationY>1514</locationY>
+        <collectionReference>MietzahlungForMieter_FILTER</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>SetAnteilFieldsOfNKToMietzahlung</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>HeizkostenForMieter_FILTER</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordCreates>
+        <name>CreateSaldoRecord_CREATE</name>
+        <label>Create Saldo Record</label>
+        <locationX>352</locationX>
+        <locationY>2546</locationY>
+        <connector>
+            <targetReference>AddRecordToMietvertragList_ASSIGNMENT</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Betrag__c</field>
+            <value>
+                <elementReference>SaldoFinale</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Mietvertrag__c</field>
+            <value>
+                <elementReference>ForEachMietvertrag_LOOP.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Saldo_Jahr__c</field>
+            <value>
+                <elementReference>recordId.Jahr__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Typ__c</field>
+            <value>
+                <stringValue>Saldo</stringValue>
+            </value>
+        </inputAssignments>
+        <object>SaldoNebenkosten__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>PublishPERecordToCreatePDFs_CREATE</name>
+        <label>Publish PE Record To Create PDFs</label>
+        <locationX>176</locationX>
+        <locationY>3794</locationY>
+        <inputAssignments>
+            <field>MietvertragIdList__c</field>
+            <value>
+                <elementReference>MietvertragIdListJSON</elementReference>
+            </value>
+        </inputAssignments>
+        <object>NK_PDFCreator_PE__e</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <name>GetHeizkostenRecord_GET</name>
+        <label>Get Heizkosten Record</label>
+        <locationX>176</locationX>
+        <locationY>1082</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>ForEachMietvertrag_LOOP</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Objekt__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId.Objekt__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Jahr__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId.Jahr__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Heizkosten__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>GetMietvertragRecord_GET</name>
+        <label>Get Mietvertrag Record</label>
+        <locationX>176</locationX>
+        <locationY>974</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>GetHeizkostenRecord_GET</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Objekt__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId.Objekt__r.Name</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>MietvertragIdList</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsFlat__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Mietvertrag__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>GetMietzahlungRecord_GET</name>
+        <label>Get Mietzahlung Record</label>
+        <locationX>176</locationX>
+        <locationY>458</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>ForEachMietzahlung_LOOP</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Objekt__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId.Objekt__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Jahr__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId.Jahr__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsFlat__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Mietzahlung__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>GetOffeneGebuehrenRecords_GET</name>
+        <label>Get OffeneGebuehren Records</label>
+        <locationX>176</locationX>
+        <locationY>2846</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>EachOffeneGebuehr_LOOP</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Zahlungsstatus__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Offen</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Account__c</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>MieterIdList</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Gebuehr__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>UpdateMietvertragRecords_UPDATE</name>
+        <label>Update Mietvertrag Records</label>
+        <locationX>176</locationX>
+        <locationY>3578</locationY>
+        <connector>
+            <targetReference>UpdateNebenkostenRecord_UPDATE</targetReference>
+        </connector>
+        <inputReference>MietvertraegeList</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>UpdateMietzahlungRecords_UPDATE</name>
+        <label>Update Mietzahlung Records</label>
+        <locationX>176</locationX>
+        <locationY>3470</locationY>
+        <connector>
+            <targetReference>UpdateMietvertragRecords_UPDATE</targetReference>
+        </connector>
+        <inputReference>MietzahlungsList</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>UpdateNebenkostenRecord_UPDATE</name>
+        <label>Update Nebenkosten Record</label>
+        <locationX>176</locationX>
+        <locationY>3686</locationY>
+        <connector>
+            <targetReference>PublishPERecordToCreatePDFs_CREATE</targetReference>
+        </connector>
+        <inputReference>recordId</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>UpdateOffeneGebuehren_UPDATE</name>
+        <label>Update Offene Gebuehren</label>
+        <locationX>176</locationX>
+        <locationY>3362</locationY>
+        <connector>
+            <targetReference>UpdateMietzahlungRecords_UPDATE</targetReference>
+        </connector>
+        <inputReference>OffeneGebuehrenList</inputReference>
+    </recordUpdates>
+    <screens>
+        <name>Bestaetigung</name>
+        <label>Bestaetigung</label>
+        <locationX>176</locationX>
+        <locationY>242</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Abbrechen</backButtonLabel>
+        <connector>
+            <targetReference>SetNebenkostenDurchgefuehrt_ASSIGNMENT</targetReference>
+        </connector>
+        <fields>
+            <name>Bestaetigen_TEXT</name>
+            <fieldText>&lt;p&gt;Bist du sicher?&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Bestätigen</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Durchfuehren_ACTION</name>
+        <label>Durchführen</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Abbrechen</backButtonLabel>
+        <connector>
+            <targetReference>Bestaetigung</targetReference>
+        </connector>
+        <fields>
+            <name>Nebenkostenabrechnung_TEXT</name>
+            <fieldText>&lt;p&gt;Nebenkostenabrechnung durchführen?&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Fortfahren</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Durchfuehren_ACTION</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>booleanvalue1</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>currentItem_HeizkostenForMieter_FILTER</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Heizkosten__c</objectType>
+    </variables>
+    <variables>
+        <name>currentItem_MietzahlungForMieter_FILTER</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Mietzahlung__c</objectType>
+    </variables>
+    <variables>
+        <name>datejahr1</name>
+        <dataType>Date</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>HasHeizkosten</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>MieterIdList</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>MietvertraegeList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Mietvertrag__c</objectType>
+    </variables>
+    <variables>
+        <name>MietvertragIdList</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>MietvertragIdListJSON</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>MietzahlungsList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Mietzahlung__c</objectType>
+    </variables>
+    <variables>
+        <name>OffeneGebuehren</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <name>OffeneGebuehrenList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Gebuehr__c</objectType>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Nebenkosten__c</objectType>
+    </variables>
+    <variables>
+        <name>Saldo1</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <name>Saldo2</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+</Flow>

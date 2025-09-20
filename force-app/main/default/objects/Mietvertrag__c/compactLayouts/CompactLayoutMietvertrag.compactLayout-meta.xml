@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CompactLayoutMietvertrag</fullName>
+    <fields>Eingezogen__c</fields>
+    <fields>Ausgezogen__c</fields>
+    <fields>Gesamtmiete__c</fields>
+    <label>Compact Layout_Mietvertrag</label>
+</CompactLayout>

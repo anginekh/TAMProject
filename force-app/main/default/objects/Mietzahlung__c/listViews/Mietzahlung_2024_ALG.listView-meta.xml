@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Mietzahlung_2024_ALG</fullName>
+    <columns>NAME</columns>
+    <columns>Mieter__c</columns>
+    <columns>Mietvertrag__c</columns>
+    <columns>Oktober__c</columns>
+    <columns>September__c</columns>
+    <columns>Januar__c</columns>
+    <columns>Februar__c</columns>
+    <columns>Maerz__c</columns>
+    <columns>April__c</columns>
+    <columns>Mai__c</columns>
+    <columns>Juni__c</columns>
+    <columns>Juli__c</columns>
+    <columns>August__c</columns>
+    <columns>Differenz__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Jahr__c</field>
+        <operation>equals</operation>
+        <value>2024</value>
+    </filters>
+    <filters>
+        <field>Objekt__c</field>
+        <operation>contains</operation>
+        <value>ALG</value>
+    </filters>
+    <label>Mietzahlung 2024 ALG</label>
+</ListView>
