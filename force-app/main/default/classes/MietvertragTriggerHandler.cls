@@ -19,6 +19,11 @@ public without sharing class MietvertragTriggerHandler {
         updateBetriebskostenAndHeizkostenAltAndNKEDatum(newList,oldMap);
     }
 
+
+
+    /*---------------------********************+******************---------------------*/
+
+
     private static void updateBetriebskostenAndHeizkostenAltAndNKEDatum(List<Mietvertrag__c> newList, Map<Id, Mietvertrag__c> oldMap){
         List<Mietvertrag__c> mvUpdates = new List<Mietvertrag__c>();
         for (Mietvertrag__c m:newList){
