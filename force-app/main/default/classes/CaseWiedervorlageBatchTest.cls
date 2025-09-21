@@ -16,7 +16,8 @@ private class CaseWiedervorlageBatchTest {
         Database.executeBatch(new CaseWiedervorlageBatch(), 200);
         Test.stopTest();
 
-        c = [SELECT Status FROM Case WHERE Id = :c.Id];
+        c = [SELECT Status, DatumWiedervorlage__c FROM Case WHERE Id = :c.Id];
         System.assertEquals('Offen', c.Status);
+        System.assertEquals(null, c.DatumWiedervorlage__c);
     }
 }

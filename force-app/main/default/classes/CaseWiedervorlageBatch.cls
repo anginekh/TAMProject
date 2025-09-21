@@ -18,7 +18,7 @@ global class CaseWiedervorlageBatch implements Database.Batchable<SObject> {
         for (SObject sobj : scope) {
             Case c = (Case)sobj;
             if (c.Status != 'Offen') {
-                updates.add(new Case(Id = c.Id, Status = 'Offen'));
+                updates.add(new Case(Id = c.Id, Status = 'Offen', DatumWiedervorlage__c = null ));
             }
         }
         if (!updates.isEmpty()) {

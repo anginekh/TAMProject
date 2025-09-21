@@ -9,7 +9,6 @@ public with sharing class CaseTriggerHandler {
     }
 
     public void onBeforeUpdate(List<Case> newList, Map<Id, Case> oldMap){
-        deleteDatumWiedervorlage(newList, oldMap);
 
     }
 
@@ -22,14 +21,5 @@ public with sharing class CaseTriggerHandler {
     }
 
     /*---------------------********************+******************---------------------*/
-
-    private static void deleteDatumWiedervorlage(List<Case> newList, Map<Id, Case> oldMap){
-        for (Case c:newList) {
-            if (c.DatumWiedervorlage__c != null && c.Status == 'Offen') {
-                c.DatumWiedervorlage__c = null;
-
-            }
-        }
-    }
 
 }

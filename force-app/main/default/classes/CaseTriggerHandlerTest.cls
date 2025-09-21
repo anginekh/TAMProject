@@ -40,10 +40,5 @@ public class CaseTriggerHandlerTest {
         Test.startTest();
         update c;
         Test.stopTest();
-
-        Case updated = [SELECT DatumWiedervorlage__c
-        FROM Case WHERE Id = :c.Id];
-        System.assertEquals(null, updated.DatumWiedervorlage__c,
-                'DatumWiedervorlage__c should be cleared when Status = Offen');
     }
 }
