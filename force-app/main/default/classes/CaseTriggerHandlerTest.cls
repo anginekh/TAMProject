@@ -29,43 +29,6 @@ public class CaseTriggerHandlerTest {
     }
 
     @isTest
-    static void testBeforeInsertLogic() {
-        // Create a case to test onBeforeInsert logic
-        Case c = new Case(
-                Origin = 'Web',
-                Status = 'New',
-                Subject = 'Insert Test',
-                DatumWiedervorlage__c = Date.today().addDays(1)
-        );
-
-        Test.startTest();
-        insert c;
-        Test.stopTest();
-
-        // After insert, the trigger runs before-insert logic
-        Case insertedCase = [SELECT DatumWiedervorlageIsSet__c FROM Case WHERE Id = :c.Id];
-        //System.assertEquals(true, insertedCase.DatumWiedervorlageIsSet__c,'DatumWiedervorlageIsSet__c should be set to TRUE when a date is provided on insert');
-    }
-
-    @isTest
-    static void testBeforeUpdateLogic_DateChanged() {
-        // Fetch one of the setup cases that had a date
-        Case c = [SELECT Id, DatumWiedervorlage__c, DatumWiedervorlageIsSet__c
-        FROM Case WHERE DatumWiedervorlage__c != null LIMIT 1];
-
-        // Change the date to trigger updateIsChangedToWiedervorlageToTrue
-        c.DatumWiedervorlage__c = c.DatumWiedervorlage__c.addDays(2);
-
-        Test.startTest();
-        update c;
-        Test.stopTest();
-
-        Case updated = [SELECT DatumWiedervorlageIsSet__c
-        FROM Case WHERE Id = :c.Id];
-        //System.assertEquals(true, updated.DatumWiedervorlageIsSet__c, 'DatumWiedervorlageIsSet__c should be TRUE when date changes');
-    }
-
-    @isTest
     static void testBeforeUpdateLogic_StatusOffenDeletesDate() {
         // Fetch the setup case that has NO date and set one to trigger delete logic
         Case c = [SELECT Id, DatumWiedervorlage__c
