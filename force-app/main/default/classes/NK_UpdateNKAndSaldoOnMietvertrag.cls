@@ -92,7 +92,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
 
                 // Step 1: compute the theoretical monthly share
                 Decimal monthlyShare = (totalBk != null && share != null)
-                        ? (totalBk * (share / 100)) / 12
+                        ? (totalBk * share ) / 12
                         : 0;
 
                 // Step 2: if the new share is higher, maybe round up to next multiple of 5
@@ -117,7 +117,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 Date yearEnd   = Date.newInstance(Integer.valueOf(nk.Jahr__c) + 1, 1, 1);
 
                 // Tenant's monthly cost share
-                Decimal monthlyCost = (nk.BetriebskostenTotal__c * (mv.Wohnflaechenanteil__c / 100)) / 12;
+                Decimal monthlyCost = (nk.BetriebskostenTotal__c * mv.Wohnflaechenanteil__c) / 12;
 
                 //Only for this year (2024), the field 'Nebenkosten bezahlt 2024' is used. From next year, the usual field 'Nebenkosten bezahlt' applies.
                 Decimal nebenkostenBezahlt = nk.Jahr__c == '2024' ? mz.NebenkostenBezahlt2024__c : mz.NebenkostenBezahlt__c;
