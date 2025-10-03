@@ -17,21 +17,28 @@ public with sharing class NK_PDFCreator{
         cadmus_core.ConvertController.ConvertDataModel cdm2 = new cadmus_core.ConvertController.ConvertDataModel();
         cadmus_core.DocGenerationWrapper result2;
 
-        /*Map<String, cadmus_core__Pack__c> packMap = new Map<String, cadmus_core__Pack__c>();
-        List <cadmus_core__Pack__c> packs = (List <cadmus_core__Pack__c>) [SELECT Id, Name FROM cadmus_core__Pack__c WHERE Name LIKE 'NK_Abrechnung%'];
-        System.debug('im here 0 : ' + packs);
-        for(cadmus_core__Pack__c p:packs){
-            packMap.put(p.Name, p);
-        }*/
 
         List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
         // Set your variable (name must match variable used in your PDF Butler template)
-        Mietvertrag__c mv = [SELECT Id, Wohnung__r.Objekt__c, Mieter__r.Name FROM Mietvertrag__c WHERE Id =: mietvertragList[0].Id];
+        Mietvertrag__c mv = [SELECT Id, Wohnung__r.Objekt__c, Mieter__r.Name, Eingezogen__c, Ausgezogen__c FROM Mietvertrag__c WHERE Id =: mietvertragList[0].Id];
         Map<String, Object> inputMap = new Map<String, Object>();
         //Add a variable of different types - we will process the type correctly
         //More input on variables: https://www.pdfbutler.com/academy.html?q=Actionable%20run%20APEX%20Class
+        Integer lastYear = Date.today().year()-1;
         inputMap.put('ObjektId', mv.Wohnung__r.Objekt__c);
-        inputMap.put('LastYear', String.valueOf(Date.today().year()-1));
+        inputMap.put('LastYear', String.valueOf(lastYear));
+
+        //More info on KeyValue DataSources: https://www.pdfbutler.com/academy.html?q=KeyValue%20DataSources
+        //Add a SINGLE DataSource - You can select data, for demo purposes, we wil use hardcoded data
+        Map<String, Object> singleDS = new Map<String, Object>();
+        Date nextWeek = System.today().addDays(7);
+        Date datePlus42 = System.today().addDays(42);
+        singleDS.put('NextWeek', nextWeek.format());
+        singleDS.put('DatePlus42', datePlus42.format());
+        //Get DS by unique identifier
+        cadmus_core__Data_Source__c ds1 = [SELECT Id FROM cadmus_core__Data_Source__c
+        WHERE Name = 'inputMap'];
+
 
         Map <Id, ContentVersion> mietvertragIdCVMap1 = new Map <Id, ContentVersion> ();
         Map <Id, ContentVersion> mietvertragIdCVMap2 = new Map <Id, ContentVersion> ();
@@ -82,6 +89,25 @@ public with sharing class NK_PDFCreator{
                 //register the error that Mietvertrag's AktuellerSaldo__c is empty.
             }
 
+            Date beginningOfYear = Date.newInstance(lastYear, 1, 1);
+            Date endOfYear = Date.newInstance(lastYear, 12, 31);
+            Date startDate = (mv.Eingezogen__c < beginningOfYear || mv.Eingezogen__c == null) ? beginningOfYear: mv.Eingezogen__c;
+            Date endDate = (mv.Ausgezogen__c > endOfYear || mv.Ausgezogen__c == null) ? endOfYear: mv.Ausgezogen__c;
+
+            Integer monthsLivedThisYear = endDate.month() - startDate.month() + 1;
+
+
+
+            singleDS.put('StartDate', startDate.format());
+            singleDS.put('EndDate', endDate.format());
+            singleDS.put('MonthsLivedThisYear', monthsLivedThisYear);
+
+            inputMap.put(ds1.Id, singleDS);
+
+            cdm.inputMap = inputMap;
+
+            System.debug('im here >>> inputMap = ' + JSON.serialize(inputMap));
+
             Map<String, cadmus_core__Doc_Config__c> docConfigMap = new Map<String, cadmus_core__Doc_Config__c>();
             List <cadmus_core__Doc_Config__c> docConfigs = (List <cadmus_core__Doc_Config__c>) [SELECT Id, Name FROM cadmus_core__Doc_Config__c WHERE Name LIKE 'NK_Abrechnung%'];
             System.debug('im here 0 : ' + docConfigs);
@@ -95,7 +121,9 @@ public with sharing class NK_PDFCreator{
                 // Call PDF Butler
                 if (Test.isRunningTest()) {
                     result = null;
-                } else { result = cadmus_core.ConvertController.convertWithWrapperAndInputMap(cdm, inputMap);
+                } else {
+                    System.debug('im here cdm ' + cdm);
+                    result = cadmus_core.ConvertController.convertWithWrapperAndInputMap(cdm, inputMap);
                 }
                 if (result == null || result.result == 'FAILED') {
                     documentCreationFailed = true;

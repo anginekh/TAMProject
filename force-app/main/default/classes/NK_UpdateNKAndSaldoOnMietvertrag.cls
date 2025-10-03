@@ -60,7 +60,6 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
         Map <Id, Account> MieterMap = new Map <Id, Account> ([SELECT Id, OffeneGebuehren__c FROM Account WHERE Id IN :mieterIds]);
 
         // Prepare lists for DML
-        List<Mietzahlung__c> mietzahlungenToUpdate = new List<Mietzahlung__c>();
         List<Mietvertrag__c> mietvertraegeToUpdate = new List<Mietvertrag__c>();
         List<SaldoNebenkosten__c> saldoToInsert = new List<SaldoNebenkosten__c>();
         List<Gebuehr__c> gebuehrenToUpdate = new List<Gebuehr__c>();
@@ -197,7 +196,6 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
             insert saldoToInsert;
             update gebuehrenToUpdate;
 
-            //todo: publish pe record
             String serializedJsonIdList = JSON.serialize(mietvertragIds);
             System.debug ('im here: ' + mietvertragIds);
             NK_PDFCreator_PE__e event= new NK_PDFCreator_PE__e (MietvertragIdList__c = serializedJsonIdList );
