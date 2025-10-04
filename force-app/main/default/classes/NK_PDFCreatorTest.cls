@@ -55,6 +55,10 @@ private class NK_PDFCreatorTest {
         }
         insert docConfigs;
 
+        RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'KEYVALUE' LIMIT 1];
+        cadmus_core__Data_Source__c ds1 = new cadmus_core__Data_Source__c (Name = 'inputMap', RecordTypeId = rt.Id);
+        insert ds1;
+
         Date today = Date.today();
         List<Mietvertrag__c> testMVs = new List<Mietvertrag__c>{
                 // Scenario 1: HighPlus (saldo >= 100)
@@ -127,6 +131,10 @@ private class NK_PDFCreatorTest {
         // Only insert Excel config (omit HighPlus on purpose)
         cadmus_core__Doc_Config__c excelConfig = new cadmus_core__Doc_Config__c(Name = 'NK_Abrechnung_Excel');
         insert excelConfig;
+
+        RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'KEYVALUE' LIMIT 1];
+        cadmus_core__Data_Source__c ds1 = new cadmus_core__Data_Source__c (Name = 'inputMap', RecordTypeId = rt.Id);
+        insert ds1;
 
         Test.startTest();
         NK_PDFCreator.createPDF(new List<String>{mv.Id});

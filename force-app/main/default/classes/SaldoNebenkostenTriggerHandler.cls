@@ -2,7 +2,7 @@
  * Created by Angine on 06/07/2025.
  */
 
-public with sharing class SaldoNebenkostenTriggerHandler {
+public without sharing class SaldoNebenkostenTriggerHandler {
 
     public void onBeforeInsert(List<SaldoNebenkosten__c> newList){
 

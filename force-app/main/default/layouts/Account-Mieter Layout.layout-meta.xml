@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
-    <excludeButtons>DataDotComCompanyHierarchy</excludeButtons>
+    <excludeButtons>DataDotComAccountInsights</excludeButtons>
+    <excludeButtons>DataDotComClean</excludeButtons>
     <excludeButtons>DisableCustomerPortalAccount</excludeButtons>
     <excludeButtons>DisablePartnerPortalAccount</excludeButtons>
     <excludeButtons>IncludeOffline</excludeButtons>
+    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <excludeButtons>Share</excludeButtons>
+    <excludeButtons>Submit</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -20,7 +23,7 @@
                 <field>Description</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
+                <behavior>Readonly</behavior>
                 <field>Mieternummer__c</field>
             </layoutItems>
             <layoutItems>
@@ -46,10 +49,6 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>KontaktpersonEmail__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Heizkosten__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -81,15 +80,15 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>SaldoNebenkosten__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
                 <field>IBAN__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
+                <behavior>Edit</behavior>
                 <field>Anrede__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Geburtstag__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -171,11 +170,6 @@
     <platformActionList>
         <actionListContext>Record</actionListContext>
         <platformActionListItems>
-            <actionName>FeedItem.ContentPost</actionName>
-            <actionType>QuickAction</actionType>
-            <sortOrder>11</sortOrder>
-        </platformActionListItems>
-        <platformActionListItems>
             <actionName>Account.Email</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>0</sortOrder>
@@ -229,6 +223,11 @@
             <actionName>FeedItem.TextPost</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>10</sortOrder>
+        </platformActionListItems>
+        <platformActionListItems>
+            <actionName>FeedItem.ContentPost</actionName>
+            <actionType>QuickAction</actionType>
+            <sortOrder>11</sortOrder>
         </platformActionListItems>
     </platformActionList>
     <quickActionList>
@@ -284,7 +283,7 @@
         <fields>NAME</fields>
         <fields>Wohnung__c</fields>
         <fields>Jahr__c</fields>
-        <fields>SollGesamtmietemonatl__c</fields>
+        <fields>NeuSollGesamtmietemonatl__c</fields>
         <fields>SollGesamtmiete__c</fields>
         <fields>InsgesamtBezahlt__c</fields>
         <fields>Differenz__c</fields>
@@ -294,10 +293,10 @@
         <excludeButtons>MassChangeOwner</excludeButtons>
         <fields>NAME</fields>
         <fields>Betrag__c</fields>
-        <fields>Bezahlt__c</fields>
+        <fields>Zahlungsstatus__c</fields>
+        <fields>Bemerkungen__c</fields>
         <fields>Typ__c</fields>
         <fields>CREATED_DATE</fields>
-        <fields>Bemerkungen__c</fields>
         <relatedList>Gebuehr__c.Account__c</relatedList>
     </relatedLists>
     <relatedLists>
@@ -311,14 +310,11 @@
         <relatedList>Wohnung__c.Account__c</relatedList>
     </relatedLists>
     <relatedLists>
-        <fields>TASK.SUBJECT</fields>
-        <fields>TASK.WHO_NAME</fields>
-        <fields>ACTIVITY.TASK</fields>
-        <fields>TASK.DUE_DATE</fields>
-        <fields>EVENT.LOCATION</fields>
-        <fields>CORE.USERS.FULL_NAME</fields>
-        <fields>TASK.WHAT_NAME</fields>
-        <relatedList>RelatedHistoryList</relatedList>
+        <relatedList>RelatedEntityHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Objekt__c.Hausmeister__c</relatedList>
     </relatedLists>
     <relatedObjects>ParentId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>

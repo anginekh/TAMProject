@@ -7,6 +7,14 @@ public class MietvertragTriggerHandlerTest {
 
     @testSetup
     static void setupData() {
+
+        // create test objekt
+        Objekt__c o = new Objekt__c(Name = 'Test Objekt', Gesamtwohnflaeche__c = 500);
+        insert o;
+
+        // create test Wohnung
+        Wohnung__c w = new Wohnung__c(Name = 'Tets Wohnung', WohnflaecheQm__c = 50, Objekt__c = o.Id );
+        Insert w;
         // Create Mietvertrag records for testing
         List<Mietvertrag__c> mvs = new List<Mietvertrag__c>();
         Account acc = new Account(Name = 'Test Mieter');
@@ -16,7 +24,8 @@ public class MietvertragTriggerHandlerTest {
                     BetriebskostenNeu__c = 100,
                     HeizkostenNeu__c = 50,
                     KaltmieteNeu__c = 300,
-                    Mieter__c = acc.Id
+                    Mieter__c = acc.Id,
+                    Wohnung__c = w.Id
 
             ));
         }

@@ -18,10 +18,17 @@ public with sharing class NK_PDFCreator{
         cadmus_core.DocGenerationWrapper result2;
 
 
-        List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
+        List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c, Mieter__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
         // Set your variable (name must match variable used in your PDF Butler template)
         Mietvertrag__c mv = [SELECT Id, Wohnung__r.Objekt__c, Mieter__r.Name, Eingezogen__c, Ausgezogen__c FROM Mietvertrag__c WHERE Id =: mietvertragList[0].Id];
         Map<String, Object> inputMap = new Map<String, Object>();
+        Map <Id, List <Gebuehr__c>> mieterIdGebuehrMap = new Map <Id, List <Gebuehr__c>> ();
+        List <Gebuehr__c> gebuehrList = [SELECT Id, Zahlungsstatus__c, Betrag__c, Account__c FROM Gebuehr__c WHERE Zahlungsstatus__c = 'Berechnet in NK-Saldo' AND LastModifiedDate = TODAY];
+        for (Gebuehr__c g: gebuehrList){
+            if (!mieterIdGebuehrMap.containsKey(g.Account__c)) mieterIdGebuehrMap.put(g.Account__c, new List <Gebuehr__c>());
+            mieterIdGebuehrMap.get(g.Account__c).add(g);
+        }
+
         //Add a variable of different types - we will process the type correctly
         //More input on variables: https://www.pdfbutler.com/academy.html?q=Actionable%20run%20APEX%20Class
         Integer lastYear = Date.today().year()-1;
@@ -46,41 +53,49 @@ public with sharing class NK_PDFCreator{
             //String packName;
             String docConfigName;
             if (m.AktuellerSaldo__c != null){
-                //scenario 1
+                //scenario 1,2
                 if (m.AktuellerSaldo__c >= 100){
-                    System.debug('im here 1 : ' + m.AktuellerSaldo__c);
-                    //packName = 'NK_Abrechnung_HighPlus_Pack';
-                    docConfigName = 'NK_Abrechnung_HighPlus';
+                    //scenario 1
+                    if(m.NBKEhDatum__c != null && m.NBKEhDatum__c >= System.today()) {
+                        System.debug('im here 3 : ' + m.AktuellerSaldo__c);
+                        docConfigName = 'NK_Abrechnung_HighPlus_Erhoehung';
                     //scenario 2
-                }else if(m.AktuellerSaldo__c >= 0 && m.AktuellerSaldo__c < 100){
-                    System.debug('im here 2 : ' + m.AktuellerSaldo__c);
-                    //packName = 'NK_Abrechnung_LowPlus_Pack';
-                    docConfigName = 'NK_Abrechnung_LowPlus';
-
-                    //scenario 3,4
-                }else if(m.AktuellerSaldo__c < 0 && m.AktuellerSaldo__c > -100){
+                    }else {
+                        System.debug('im here 1 : ' + m.AktuellerSaldo__c);
+                        docConfigName = 'NK_Abrechnung_HighPlus';
+                    }
+                //scenario 3,4
+                }else if (m.AktuellerSaldo__c >= 0 && m.AktuellerSaldo__c < 100){
                     //scenario 3
+                    if(m.NBKEhDatum__c != null && m.NBKEhDatum__c >= System.today()) {
+                        System.debug('im here 3 : ' + m.AktuellerSaldo__c);
+                        docConfigName = 'NK_Abrechnung_LowPlus_Erhoehung';
+                    //scenario 4
+                    }else {
+                        System.debug('im here 2 : ' + m.AktuellerSaldo__c);
+                        docConfigName = 'NK_Abrechnung_LowPlus';
+                    }
+
+                //scenario 4,5
+                }else if(m.AktuellerSaldo__c < 0 && m.AktuellerSaldo__c > -100){
+                    //scenario 4
                     if(m.NBKEhDatum__c != null && m.NBKEhDatum__c >= System.today()){
                         System.debug('im here 3 : ' + m.AktuellerSaldo__c);
-                        //packName = 'NK_Abrechnung_LowMinus_Erhoehung_Pack';
                         docConfigName = 'NK_Abrechnung_LowMinus_Erhoehung';
-                        //scenario 4
+                    //scenario 5
                     }else if(m.NBKEhDatum__c == null || m.NBKEhDatum__c < System.today()){
                         System.debug('im here 4 : ' + m.AktuellerSaldo__c);
-                        //packName = 'NK_Abrechnung_LowMinus_Pack';
                         docConfigName = 'NK_Abrechnung_LowMinus';
                     }
-                    //scenario 5,6
+                //scenario 6,7
                 }else if(m.AktuellerSaldo__c <= -100){
-                    //scenario 5
+                    //scenario 6
                     if(m.NBKEhDatum__c != null && m.NBKEhDatum__c >= System.today()){
                         System.debug('im here 5 : ' + m.AktuellerSaldo__c);
-                        //packName = 'NK_Abrechnung_HighMinus_Erhoehung_Pack';
                         docConfigName = 'NK_Abrechnung_HighMinus_Erhoehung';
-                        //scenario 6
+                    //scenario 7
                     }else if(m.NBKEhDatum__c == null || m.NBKEhDatum__c < System.today()){
                         System.debug('im here 6 : ' + m.AktuellerSaldo__c);
-                        //packName = 'NK_Abrechnung_HighMinus_Pack';
                         docConfigName = 'NK_Abrechnung_HighMinus';
                     }
                 }
@@ -96,11 +111,20 @@ public with sharing class NK_PDFCreator{
 
             Integer monthsLivedThisYear = endDate.month() - startDate.month() + 1;
 
+            Decimal gebuehren = 0 ;
+
+            if (mieterIdGebuehrMap.containsKey(m.Mieter__c)) {
+                for (Gebuehr__c g : mieterIdGebuehrMap.get(m.Mieter__c)) {
+                    System.debug('im here : ' + g + ' Betrag : ' + g.Betrag__c);
+                    gebuehren += g.Betrag__c;
+                }
+            }
 
 
             singleDS.put('StartDate', startDate.format());
             singleDS.put('EndDate', endDate.format());
             singleDS.put('MonthsLivedThisYear', monthsLivedThisYear);
+            singleDS.put('Gebuehren', gebuehren);
 
             inputMap.put(ds1.Id, singleDS);
 

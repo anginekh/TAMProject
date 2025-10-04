@@ -46,6 +46,10 @@ private class NK_PDFCreatorPETriggerTest {
         };
         insert configs;
 
+        RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'KEYVALUE' LIMIT 1];
+        cadmus_core__Data_Source__c ds1 = new cadmus_core__Data_Source__c (Name = 'inputMap', RecordTypeId = rt.Id);
+        insert ds1;
+
         // Create Platform Event
         Test.startTest();
 

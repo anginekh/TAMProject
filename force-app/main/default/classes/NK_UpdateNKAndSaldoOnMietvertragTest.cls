@@ -12,7 +12,7 @@ public class NK_UpdateNKAndSaldoOnMietvertragTest {
         insert mieter;
 
         // Create Objekt (assuming lookup for NK + Mietzahlung, adapt if different object model)
-        Objekt__c objekt = new Objekt__c(Name = 'Objekt 1', Gesamtwohnflaeche__c = 1000);
+        Objekt__c objekt = new Objekt__c(Name = 'Objekt 1', Gesamtwohnflaeche__c = 600);
         insert objekt;
 
         // Create Wohnung
@@ -35,7 +35,7 @@ public class NK_UpdateNKAndSaldoOnMietvertragTest {
         Nebenkosten__c nk = new Nebenkosten__c(
                 Objekt__c = objekt.Id,
                 Jahr__c = '2024',
-                Allgemeinstrom__c = 1000,
+                Allgemeinstrom__c = 20000,
                 NebenkostenabrechnungDurchgefuehrt__c = false
         );
         insert nk;
@@ -64,7 +64,8 @@ public class NK_UpdateNKAndSaldoOnMietvertragTest {
         // Create Gebuehr
         Gebuehr__c g = new Gebuehr__c(
                 Account__c = mieter.Id,
-                Zahlungsstatus__c = 'Offen'
+                Zahlungsstatus__c = 'Offen',
+                Betrag__c = 100
         );
         insert g;
     }
@@ -74,6 +75,10 @@ public class NK_UpdateNKAndSaldoOnMietvertragTest {
     static void testNkUpdateNkAndSaldo() {
         // Fetch Nebenkosten
         Nebenkosten__c nk = [SELECT Id FROM Nebenkosten__c LIMIT 1];
+
+        RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'KEYVALUE' LIMIT 1];
+        cadmus_core__Data_Source__c ds1 = new cadmus_core__Data_Source__c (Name = 'inputMap', RecordTypeId = rt.Id);
+        insert ds1;
 
         // Call the invocable method
         Test.startTest();

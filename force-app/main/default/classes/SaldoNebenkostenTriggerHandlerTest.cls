@@ -7,12 +7,21 @@ private class SaldoNebenkostenTriggerHandlerTest {
 
     @isTest
     static void testCalculateSaldoOnInsertAndUpdate() {
+
+        // create test objekt
+        Objekt__c o = new Objekt__c(Name = 'Test Objekt', Gesamtwohnflaeche__c = 500);
+        insert o;
+
+        // create test Wohnung
+        Wohnung__c w = new Wohnung__c(Name = 'Tets Wohnung', WohnflaecheQm__c = 50, Objekt__c = o.Id );
+        Insert w;
+
         // Step 1: Create an Account
         Account a = new Account (Name = 'test Mieter');
         Insert a;
 
         // Step 1: Create a Mietvertrag__c
-        Mietvertrag__c mietvertrag = new Mietvertrag__c(KaltmieteNeu__c = 500, Mieter__c = a.Id);
+        Mietvertrag__c mietvertrag = new Mietvertrag__c(KaltmieteNeu__c = 500, Mieter__c = a.Id, Wohnung__c = w.Id);
         insert mietvertrag;
 
         // Step 2: Create initial saldo records
