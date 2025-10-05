@@ -164,7 +164,7 @@ public with sharing class NK_PDFCreator{
             singleDS.put('GesamtHeizkostenWohnung', gesamtHeizkostenWohnung);
             singleDS.put('GesamtHeizkostenObjekt', gesamtHeizkostenObjekt);
 
-            singleDS.put('GesamtHeizkostenObjektHaelfte', gesamtHeizkostenObjektHaelfte );
+            singleDS.put('GesamtHeizkostenObjektHaelfte', gesamtHeizkostenObjektHaelfte);
 
             inputMap.put(ds1.Id, singleDS);
 
