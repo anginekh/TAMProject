@@ -56,7 +56,8 @@ public class NK_UpdateNKAndSaldoOnMietvertragTest {
                 Jahr__c = '2024',
                 Mietvertrag__c = mv.Id,
                 AnteilHKVerbrauch__c = 500,
-                AnteilHKWohnflaeche__c = 500
+                AnteilHKWohnflaeche__c = 500,
+                GesamtheizkostenObjekt__c = 5000
 
         );
         insert hk;

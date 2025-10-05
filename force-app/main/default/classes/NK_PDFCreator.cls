@@ -7,7 +7,7 @@
 public with sharing class NK_PDFCreator{
 
     @future(callout=true)
-    public static void createPDF(List<String> MietvertragIdList){
+    public static void createPDF(List<String> MietvertragIdList, String NebenkostenId){
 
         Boolean documentCreationFailed = false;
         //generate PDF document
@@ -17,8 +17,31 @@ public with sharing class NK_PDFCreator{
         cadmus_core.ConvertController.ConvertDataModel cdm2 = new cadmus_core.ConvertController.ConvertDataModel();
         cadmus_core.DocGenerationWrapper result2;
 
+        Nebenkosten__c nk = [
+                SELECT Id, Objekt__c, Jahr__c, BetriebskostenTotal__c, Allgemeinstrom__c, EntwaesserungNiederschlag__c,
+                        Gebaudeversicherung__c, Grundsteuer__c, Haftpflicht__c, Kabel__c, Muellabfuhr__c,
+                        Schornsteinfeger__c, Strassenreinigung_Winterdienst__c, Treppenhausreinigung__c, Wartung__c,
+                        Wasserversorgung__c, NebenkostenabrechnungDurchgefuehrt__c
+                FROM Nebenkosten__c
+                WHERE Id =:NebenkostenId
+        ];
 
-        List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c, Mieter__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
+        List<Heizkosten__c> heizkosten = [
+                SELECT Id, Mietvertrag__c, GesamtheizkostenWohnung__c, GesamtheizkostenObjekt__c
+                FROM Heizkosten__c
+                WHERE Objekt__c = :nk.Objekt__c
+                AND Jahr__c = :nk.Jahr__c
+        ];
+
+        // Map Heizkosten by Mietvertrag Id
+        Map<Id, Heizkosten__c> heizkostenByMietvertrag = new Map<Id, Heizkosten__c>();
+        for (Heizkosten__c hk : heizkosten) {
+            if (hk.Mietvertrag__c == null) continue;
+            if (!heizkostenByMietvertrag.containsKey(hk.Mietvertrag__c)) heizkostenByMietvertrag.put(hk.Mietvertrag__c, hk);
+        }
+
+
+        List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c, Mieter__c, Wohnflaechenanteil__c, Eingezogen__c, Ausgezogen__c, Mieter__r.Name, Wohnung__r.Objekt__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
         // Set your variable (name must match variable used in your PDF Butler template)
         Mietvertrag__c mv = [SELECT Id, Wohnung__r.Objekt__c, Mieter__r.Name, Eingezogen__c, Ausgezogen__c FROM Mietvertrag__c WHERE Id =: mietvertragList[0].Id];
         Map<String, Object> inputMap = new Map<String, Object>();
@@ -106,8 +129,8 @@ public with sharing class NK_PDFCreator{
 
             Date beginningOfYear = Date.newInstance(lastYear, 1, 1);
             Date endOfYear = Date.newInstance(lastYear, 12, 31);
-            Date startDate = (mv.Eingezogen__c < beginningOfYear || mv.Eingezogen__c == null) ? beginningOfYear: mv.Eingezogen__c;
-            Date endDate = (mv.Ausgezogen__c > endOfYear || mv.Ausgezogen__c == null) ? endOfYear: mv.Ausgezogen__c;
+            Date startDate = (m.Eingezogen__c < beginningOfYear || m.Eingezogen__c == null) ? beginningOfYear: m.Eingezogen__c;
+            Date endDate = (m.Ausgezogen__c > endOfYear || m.Ausgezogen__c == null) ? endOfYear: m.Ausgezogen__c;
 
             Integer monthsLivedThisYear = endDate.month() - startDate.month() + 1;
 
@@ -125,6 +148,23 @@ public with sharing class NK_PDFCreator{
             singleDS.put('EndDate', endDate.format());
             singleDS.put('MonthsLivedThisYear', monthsLivedThisYear);
             singleDS.put('Gebuehren', gebuehren);
+
+            //pass Anteil nebenkosten as variables
+            /*Allgemeinstrom__c, EntwaesserungNiederschlag__c,
+            Gebaudeversicherung__c, Grundsteuer__c, Haftpflicht__c, Kabel__c, Muellabfuhr__c,
+            Schornsteinfeger__c, Strassenreinigung_Winterdienst__c, Treppenhausreinigung__c, Wartung__c,
+            Wasserversorgung__c, NebenkostenabrechnungDurchgefuehrt__c*/
+
+            Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenWohnung__c : 0;
+            Decimal gesamtHeizkostenObjekt = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenObjekt__c : 0;
+            Decimal gesamtHeizkostenObjektHaelfte = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenObjekt__c / 2 : 0;
+            //Decimal verbrauch = gesamtHeizkostenWohnung + gesamtbetriebslosten (sum of all the Anteil)
+            //nk.Allgemeinstrom__c
+            //singleDS.put('Verbrauch', verbrauch);
+            singleDS.put('GesamtHeizkostenWohnung', gesamtHeizkostenWohnung);
+            singleDS.put('GesamtHeizkostenObjekt', gesamtHeizkostenObjekt);
+
+            singleDS.put('GesamtHeizkostenObjektHaelfte', gesamtHeizkostenObjektHaelfte );
 
             inputMap.put(ds1.Id, singleDS);
 
@@ -156,7 +196,7 @@ public with sharing class NK_PDFCreator{
                     System.debug('im here 9: success - doc target name: ' + result.response.metadata.targetName + ' doc base64: ' + result.response.base64);
 
                     ContentVersion cv = new ContentVersion();
-                    cv.Title = 'Nebenkostenabrechnung_'+ String.valueOf(System.today().year() - 1) +'_'+ mv.Mieter__r.Name;
+                    cv.Title = 'Nebenkostenabrechnung_'+ String.valueOf(System.today().year() - 1) +'_'+ m.Mieter__r.Name;
                     cv.PathOnClient = result.response.metadata.targetName;
                     cv.VersionData = result.response.base64;
                     cv.Origin = 'H';
@@ -173,7 +213,7 @@ public with sharing class NK_PDFCreator{
                     } else {
                         System.debug('im here 9: success - doc target name: ' + result2.response.metadata.targetName + ' doc base64: ' + result2.response.base64);
                         ContentVersion cv2 = new ContentVersion();
-                        cv2.Title = 'Nebenkostenabrechnung_Excel_'+ String.valueOf(System.today().year() - 1) + '_' + mv.Mieter__r.Name;
+                        cv2.Title = 'Nebenkostenabrechnung_Excel_'+ String.valueOf(System.today().year() - 1) + '_' + m.Mieter__r.Name;
                         cv2.PathOnClient = result2.response.metadata.targetName;
                         cv2.VersionData = result2.response.base64;
                         cv2.Origin = 'H';

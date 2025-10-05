@@ -11,9 +11,10 @@ trigger NK_PDFCreatorPETrigger on NK_PDFCreator_PE__e (after insert) {
     List <String> MietvertragIdList;
     for (NK_PDFCreator_PE__e event : trigger.new) {
         System.debug('Payload received: ' + Event.MietvertragIdList__c);
-        MietvertragIdList= (List<String>) JSON.deserialize(Event.MietvertragIdList__c, List<String>.class);
+        MietvertragIdList = (List<String>) JSON.deserialize(Event.MietvertragIdList__c, List<String>.class);
         System.debug('im here ' +MietvertragIdList);
+        String NebenkostenId = Event.NebenkostenId__c;
+        NK_PDFCreator.createPDF(MietvertragIdList, NebenkostenId);
     }
 
-    NK_PDFCreator.createPDF(MietvertragIdList);
 }

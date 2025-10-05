@@ -38,6 +38,9 @@ private class NK_PDFCreatorTest {
         Wohnung__c wohnung = new Wohnung__c(Name = 'Wohnung 1', Objekt__c = objekt.Id, WohnflaecheQm__c = 60);
         insert wohnung;
 
+        Nebenkosten__c nk = new Nebenkosten__c(Objekt__c = objekt.Id, Jahr__c = String.valueOf(Date.today().year()-1));
+        insert nk;
+
         // Create doc configs
         List<String> configNames = new List<String>{
                 'NK_Abrechnung_HighMinus',
@@ -88,7 +91,7 @@ private class NK_PDFCreatorTest {
         NK_PDFCreator.createPDF(new List<Id>{
                 testMVs[0].Id, testMVs[1].Id, testMVs[2].Id, testMVs[3].Id,
                 testMVs[4].Id, testMVs[5].Id, testMVs[6].Id
-        });
+        }, nk.Id);
         Test.stopTest();
 
         // Basic assertions
@@ -118,6 +121,9 @@ private class NK_PDFCreatorTest {
         Wohnung__c wohnung = new Wohnung__c(Name = 'Wohnung Test', Objekt__c = objekt.Id, WohnflaecheQm__c = 55);
         insert wohnung;
 
+        Nebenkosten__c nk = new Nebenkosten__c(Objekt__c = objekt.Id, Jahr__c = String.valueOf(Date.today().year()-1));
+        insert nk;
+
         // This saldo triggers a config name, but we won't insert that config
         Mietvertrag__c mv = new Mietvertrag__c(
                 Wohnung__c = wohnung.Id,
@@ -137,7 +143,7 @@ private class NK_PDFCreatorTest {
         insert ds1;
 
         Test.startTest();
-        NK_PDFCreator.createPDF(new List<String>{mv.Id});
+        NK_PDFCreator.createPDF(new List<String>{mv.Id}, nk.Id);
         Test.stopTest();
 
         // Assert no document created since doc config was missing

@@ -7,7 +7,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
     @InvocableMethod
     public static void nk_UpdateNkAndSaldo(List <String> nkId) {
 
-        try {
+        //try {
 
 
             System.debug('im here: nkId ' + nkId);
@@ -64,6 +64,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
 
             // Prepare lists for DML
             List<Mietvertrag__c> mietvertraegeToUpdate = new List<Mietvertrag__c>();
+            List<Mietzahlung__c> mietzahlungenToUpdate = new List<Mietzahlung__c>();
             List<SaldoNebenkosten__c> saldoToInsert = new List<SaldoNebenkosten__c>();
             List<Gebuehr__c> gebuehrenToUpdate = new List<Gebuehr__c>();
 
@@ -83,7 +84,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
 
             for (Mietvertrag__c mv : mietvertraege) {
 
-                Decimal betriebsKostenToPay;
+                Decimal betriebskostenToPay;
                 Decimal offeneGebuehren;
 
                 Decimal totalBk = nk.BetriebskostenTotal__c;            // Nebenkosten total
@@ -153,7 +154,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                     monthsLivedThatYear = 12;
                 }
 
-                betriebsKostenToPay = monthlyWohnungBetriebskosten * monthsLivedThatYear;
+                betriebskostenToPay = monthlyWohnungBetriebskosten * monthsLivedThatYear;
                 offeneGebuehren = MieterMap.get(mv.Mieter__c).OffeneGebuehren__c;
 
                 Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(mv.Id) ? heizkostenByMietvertrag.get(mv.Id).GesamtheizkostenWohnung__c : 0;
@@ -178,8 +179,10 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 mv.HeizkostenNeu__c = newHeizkosten;
                 mietvertraegeToUpdate.add(mv);
 
+                mietzahlungenByMietvertrag.get(mv.Id).NK_AnteilBetriebskostenTotal__c = betriebskostenToPay;
+                mietzahlungenToUpdate.add(mietzahlungenByMietvertrag.get(mv.Id));
 
-                Decimal saldo = nebenkostenBezahlt - gesamtHeizkostenWohnung - betriebsKostenToPay - offeneGebuehren;
+                Decimal saldo = nebenkostenBezahlt - gesamtHeizkostenWohnung - betriebskostenToPay - offeneGebuehren;
 
                 saldoToInsert.add(new SaldoNebenkosten__c(Betrag__c = saldo, Mietvertrag__c = mv.Id,
                         Typ__c = 'Saldo', Jahr__c = nk.Jahr__c));
@@ -196,7 +199,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 gebuehrenToUpdate.add(g);
             }
 
-            try {
+            //try {
 
                 //update BetriebskostenNeu__c and HeizkostenNeu__c on Mietvertrag (only if increased)
                 update mietvertraegeToUpdate;
@@ -204,22 +207,23 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 update nk;
                 insert saldoToInsert;
                 update gebuehrenToUpdate;
+                update mietzahlungenToUpdate;
 
                 String serializedJsonIdList = JSON.serialize(mietvertragIds);
                 System.debug ('im here: ' + mietvertragIds);
-                NK_PDFCreator_PE__e event = new NK_PDFCreator_PE__e (MietvertragIdList__c = serializedJsonIdList);
+                NK_PDFCreator_PE__e event = new NK_PDFCreator_PE__e (MietvertragIdList__c = serializedJsonIdList, NebenkostenId__c = nk.Id );
                 EventBus.publish(event);
 
-            } catch (Exception e) {
+            /*} catch (Exception e) {
                 //todo: exception handling
                 System.debug('im here: exception happened ' + e + ' ' + e.getMessage());
-            }
+            }*/
 
 
-        }catch (Exception e){
+        /*}catch (Exception e){
             //todo: exception handling
             System.debug('im here: exception happened ' + e + ' ' + e.getMessage());
-        }
+        }*/
     }
 
 }

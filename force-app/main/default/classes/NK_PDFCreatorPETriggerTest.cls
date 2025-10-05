@@ -30,6 +30,9 @@ private class NK_PDFCreatorPETriggerTest {
         Wohnung__c wohnung = new Wohnung__c(Name = 'Wohnung PE', Objekt__c = objekt.Id, WohnflaecheQm__c = 75);
         insert wohnung;
 
+        Nebenkosten__c nk = new Nebenkosten__c(Objekt__c = objekt.Id, Jahr__c = String.valueOf(Date.today().year()-1));
+        insert nk;
+
         Mietvertrag__c mv = new Mietvertrag__c(
                 Wohnung__c = wohnung.Id,
                 Mieter__c = acc.Id,
@@ -54,7 +57,8 @@ private class NK_PDFCreatorPETriggerTest {
         Test.startTest();
 
         NK_PDFCreator_PE__e event = new NK_PDFCreator_PE__e(
-                MietvertragIdList__c = JSON.serialize(new List<String>{mv.Id})
+                MietvertragIdList__c = JSON.serialize(new List<String>{mv.Id}),
+                NebenkostenId__c =  nk.Id
         );
         Database.SaveResult result = EventBus.publish(event);
 
