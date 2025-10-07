@@ -10,7 +10,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
         //try {
 
 
-            System.debug('im here: nkId ' + nkId);
+            System.debug('im here for nebenkosten 3 ' + nkId);
             Nebenkosten__c nk = [
                     SELECT Id, Objekt__c, Jahr__c, BetriebskostenTotal__c, Allgemeinstrom__c, EntwaesserungNiederschlag__c,
                             Gebaudeversicherung__c, Grundsteuer__c, Haftpflicht__c, Kabel__c, Muellabfuhr__c,
@@ -20,6 +20,8 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                     WHERE Id IN :nkId
                     LIMIT 1
             ];
+
+            System.debug('im here for nebenkosten 4 ' + nk.Id);
             List<Mietzahlung__c> allMietzahlungen = [
                     SELECT Id, Mietvertrag__c, Mietvertrag__r.Id, Mietvertrag__r.Wohnflaechenanteil__c, Mietvertrag__r.Eingezogen__c, Mietvertrag__r.Ausgezogen__c,
                             Mietvertrag__r.BetriebskostenNeu__c, Mietvertrag__r.HeizkostenNeu__c, Mietvertrag__r.Mieter__c,
@@ -211,6 +213,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
 
                 String serializedJsonIdList = JSON.serialize(mietvertragIds);
                 System.debug ('im here: ' + mietvertragIds);
+                System.debug('im here for nebenkosten 5: ' + nk.Id);
                 NK_PDFCreator_PE__e event = new NK_PDFCreator_PE__e (MietvertragIdList__c = serializedJsonIdList, NebenkostenId__c = nk.Id );
                 EventBus.publish(event);
 

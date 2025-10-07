@@ -9,6 +9,8 @@ public with sharing class NK_PDFCreator{
     @future(callout=true)
     public static void createPDF(List<String> MietvertragIdList, String NebenkostenId){
 
+        System.debug('im here for nebenkosten 1: '  + NebenkostenId);
+
         Boolean documentCreationFailed = false;
         //generate PDF document
         cadmus_core.ConvertController.ConvertDataModel cdm = new cadmus_core.ConvertController.ConvertDataModel();
@@ -25,6 +27,8 @@ public with sharing class NK_PDFCreator{
                 FROM Nebenkosten__c
                 WHERE Id =:NebenkostenId
         ];
+
+        System.debug('im here for nebenkosten 2: '  + nk.Id);
 
         List<Heizkosten__c> heizkosten = [
                 SELECT Id, Mietvertrag__c, GesamtheizkostenWohnung__c, GesamtheizkostenObjekt__c
