@@ -45,9 +45,9 @@ public with sharing class NK_PDFCreator{
         }
 
 
-        List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c, Mieter__c, Wohnflaechenanteil__c, Eingezogen__c, Ausgezogen__c, Mieter__r.Name, Wohnung__r.Objekt__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
+        List <Mietvertrag__c> mietvertragList = [SELECT Id, AktuellerSaldo__c, NBKEhDatum__c, Mieter__c, Wohnflaechenanteil__c, Eingezogen__c, Ausgezogen__c, Mieter__r.Name, Wohnung__r.Objekt__c, Wohnung__r.Objekt__r.Objektnummer__c FROM Mietvertrag__c WHERE Id IN : MietvertragIdList];
         // Set your variable (name must match variable used in your PDF Butler template)
-        Mietvertrag__c mv = [SELECT Id, Wohnung__r.Objekt__c, Mieter__r.Name, Eingezogen__c, Ausgezogen__c FROM Mietvertrag__c WHERE Id =: mietvertragList[0].Id];
+        Mietvertrag__c mv = [SELECT Id, Wohnung__r.Objekt__c, Wohnung__r.Objekt__r.Objektnummer__c, Mieter__r.Name, Eingezogen__c, Ausgezogen__c FROM Mietvertrag__c WHERE Id =: mietvertragList[0].Id];
         Map<String, Object> inputMap = new Map<String, Object>();
         Map <Id, List <Gebuehr__c>> mieterIdGebuehrMap = new Map <Id, List <Gebuehr__c>> ();
         List <Gebuehr__c> gebuehrList = [SELECT Id, Zahlungsstatus__c, Betrag__c, Account__c FROM Gebuehr__c WHERE Zahlungsstatus__c = 'Berechnet in NK-Saldo' AND LastModifiedDate = TODAY];
@@ -58,9 +58,13 @@ public with sharing class NK_PDFCreator{
 
         //Add a variable of different types - we will process the type correctly
         //More input on variables: https://www.pdfbutler.com/academy.html?q=Actionable%20run%20APEX%20Class
-        Integer lastYear = Date.today().year()-1;
+        //Integer lastYear = Date.today().year()-1;
+        String nkJahr = nk.Jahr__c;
+        Integer nkJahrInteger = Integer.valueOf(nkJahr);
+        String objektNummer = mv.Wohnung__r.Objekt__r.Objektnummer__c;
         inputMap.put('ObjektId', mv.Wohnung__r.Objekt__c);
-        inputMap.put('LastYear', String.valueOf(lastYear));
+        inputMap.put('NKJahr', nkJahr);
+        inputMap.put('ObjektNummer', objektNummer);
 
         //More info on KeyValue DataSources: https://www.pdfbutler.com/academy.html?q=KeyValue%20DataSources
         //Add a SINGLE DataSource - You can select data, for demo purposes, we wil use hardcoded data
@@ -131,8 +135,8 @@ public with sharing class NK_PDFCreator{
                 //register the error that Mietvertrag's AktuellerSaldo__c is empty.
             }
 
-            Date beginningOfYear = Date.newInstance(lastYear, 1, 1);
-            Date endOfYear = Date.newInstance(lastYear, 12, 31);
+            Date beginningOfYear = Date.newInstance(nkJahrInteger, 1, 1);
+            Date endOfYear = Date.newInstance(nkJahrInteger, 12, 31);
             Date startDate = (m.Eingezogen__c < beginningOfYear || m.Eingezogen__c == null) ? beginningOfYear: m.Eingezogen__c;
             Date endDate = (m.Ausgezogen__c > endOfYear || m.Ausgezogen__c == null) ? endOfYear: m.Ausgezogen__c;
 
@@ -152,6 +156,7 @@ public with sharing class NK_PDFCreator{
             singleDS.put('EndDate', endDate.format());
             singleDS.put('MonthsLivedThisYear', monthsLivedThisYear);
             singleDS.put('Gebuehren', gebuehren);
+            singleDS.put('NKJahr', nkJahr);
 
             //pass Anteil nebenkosten as variables
             /*Allgemeinstrom__c, EntwaesserungNiederschlag__c,
@@ -200,7 +205,7 @@ public with sharing class NK_PDFCreator{
                     System.debug('im here 9: success - doc target name: ' + result.response.metadata.targetName + ' doc base64: ' + result.response.base64);
 
                     ContentVersion cv = new ContentVersion();
-                    cv.Title = 'Nebenkostenabrechnung_'+ String.valueOf(System.today().year() - 1) +'_'+ m.Mieter__r.Name;
+                    cv.Title = 'Nebenkostenabrechnung_'+ nkJahr + '_' + objektNummer +'_'+ m.Mieter__r.Name;
                     cv.PathOnClient = result.response.metadata.targetName;
                     cv.VersionData = result.response.base64;
                     cv.Origin = 'H';
@@ -217,7 +222,7 @@ public with sharing class NK_PDFCreator{
                     } else {
                         System.debug('im here 9: success - doc target name: ' + result2.response.metadata.targetName + ' doc base64: ' + result2.response.base64);
                         ContentVersion cv2 = new ContentVersion();
-                        cv2.Title = 'Nebenkostenabrechnung_Excel_'+ String.valueOf(System.today().year() - 1) + '_' + m.Mieter__r.Name;
+                        cv2.Title = 'Nebenkostenabrechnung_Excel_'+ nkJahr + '_' + objektNummer + '_' + m.Mieter__r.Name;
                         cv2.PathOnClient = result2.response.metadata.targetName;
                         cv2.VersionData = result2.response.base64;
                         cv2.Origin = 'H';
