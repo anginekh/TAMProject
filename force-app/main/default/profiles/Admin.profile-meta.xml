@@ -332,6 +332,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Heizkosten__c.GesamtheizkostenWohnungNEU__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Mietvertrag__c.AusgezahlteKaution__c</field>
         <readable>true</readable>

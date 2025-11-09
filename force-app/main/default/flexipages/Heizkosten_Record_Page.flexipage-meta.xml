@@ -69,22 +69,8 @@
         </itemInstances>
         <itemInstances>
             <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.GesamtheizkostenObjekt__c</fieldItem>
-                <identifier>RecordGesamtheizkostenObjekt_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.GesamtheizkostenWohnung__c</fieldItem>
-                <identifier>RecordGesamtheizkostenWohnung_cField</identifier>
+                <fieldItem>Record.GesamtheizkostenWohnungNEU__c</fieldItem>
+                <identifier>RecordGesamtheizkostenWohnungNEU__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-9f032d44-b3f4-467c-958c-0e19cd08eedc</name>
@@ -116,26 +102,6 @@
                 <componentName>flexipage:blankSpace</componentName>
                 <identifier>flexipage_blankSpace2</identifier>
             </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.AnteilHKWohnflaeche__c</fieldItem>
-                <identifier>RecordAnteilHKWohnflaeche_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.AnteilHKVerbrauch__c</fieldItem>
-                <identifier>RecordAnteilHKVerbrauch_cField</identifier>
-            </fieldInstance>
         </itemInstances>
         <name>Facet-715ea3a2-0385-4c52-87ed-092db946d557</name>
         <type>Facet</type>

@@ -20,20 +20,8 @@
                 <field>Mietvertrag__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
-                <field>GesamtheizkostenObjekt__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>AnteilHKWohnflaeche__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>AnteilHKVerbrauch__c</field>
-            </layoutItems>
-            <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>GesamtheizkostenWohnung__c</field>
+                <field>GesamtheizkostenWohnungNEU__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>

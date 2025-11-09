@@ -206,7 +206,7 @@
             <assignToReference>Saldo2</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c</elementReference>
+                <elementReference>ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnungNEU__c</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -749,7 +749,7 @@
     <formulas>
         <name>Heizkosten</name>
         <dataType>Currency</dataType>
-        <expression>IF({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c} / 12 &gt; {!ForEachMietvertrag_LOOP.HeizkostenNeu__c}, if ( MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c}/ 12,5) &gt; 0, {!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c}/ 12- MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c} / 12,5) +5 , {!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c}/ 12 - MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnung__c} / 12,5)), {!ForEachMietvertrag_LOOP.HeizkostenNeu__c})</expression>
+        <expression>IF({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnungNEU__c} / 12 &gt; {!ForEachMietvertrag_LOOP.HeizkostenNeu__c}, if ( MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnungNEU__c}/ 12,5) &gt; 0, {!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnungNEU__c}/ 12- MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnungNEU__c} / 12,5) +5 , {!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnungNEU__c}/ 12 - MOD({!ForEachHeizkostenForMieter_LOOP.GesamtheizkostenWohnungNEU__c} / 12,5)), {!ForEachMietvertrag_LOOP.HeizkostenNeu__c})</expression>
         <scale>2</scale>
     </formulas>
     <formulas>
@@ -1140,7 +1140,7 @@ IF (AND (NOT(ISBLANK({!ForEachMietvertrag_LOOP.Ausgezogen__c})), AND( {!ForEachM
             <targetReference>Durchfuehren_ACTION</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>booleanvalue1</name>
         <dataType>Boolean</dataType>

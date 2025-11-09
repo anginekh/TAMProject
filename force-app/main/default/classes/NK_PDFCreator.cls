@@ -31,7 +31,7 @@ public with sharing class NK_PDFCreator{
         System.debug('im here for nebenkosten 2: '  + nk.Id);
 
         List<Heizkosten__c> heizkosten = [
-                SELECT Id, Mietvertrag__c, GesamtheizkostenWohnung__c, GesamtheizkostenObjekt__c
+                SELECT Id, Mietvertrag__c, GesamtheizkostenWohnungNEU__c
                 FROM Heizkosten__c
                 WHERE Objekt__c = :nk.Objekt__c
                 AND Jahr__c = :nk.Jahr__c
@@ -164,16 +164,10 @@ public with sharing class NK_PDFCreator{
             Schornsteinfeger__c, Strassenreinigung_Winterdienst__c, Treppenhausreinigung__c, Wartung__c,
             Wasserversorgung__c, NebenkostenabrechnungDurchgefuehrt__c*/
 
-            Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenWohnung__c : 0;
-            Decimal gesamtHeizkostenObjekt = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenObjekt__c : 0;
-            Decimal gesamtHeizkostenObjektHaelfte = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenObjekt__c / 2 : 0;
-            //Decimal verbrauch = gesamtHeizkostenWohnung + gesamtbetriebslosten (sum of all the Anteil)
-            //nk.Allgemeinstrom__c
+            Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenWohnungNEU__c : 0;
+
             //singleDS.put('Verbrauch', verbrauch);
             singleDS.put('GesamtHeizkostenWohnung', gesamtHeizkostenWohnung);
-            singleDS.put('GesamtHeizkostenObjekt', gesamtHeizkostenObjekt);
-
-            singleDS.put('GesamtHeizkostenObjektHaelfte', gesamtHeizkostenObjektHaelfte);
 
             inputMap.put(ds1.Id, singleDS);
 

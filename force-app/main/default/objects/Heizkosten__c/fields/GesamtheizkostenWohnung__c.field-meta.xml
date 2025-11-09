@@ -3,7 +3,7 @@
     <fullName>GesamtheizkostenWohnung__c</fullName>
     <formula>AnteilHKVerbrauch__c +  AnteilHKWohnflaeche__c</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
-    <label>Gesamtheizkosten Wohnung</label>
+    <label>DEPRECATED Gesamtheizkosten Wohnung</label>
     <precision>18</precision>
     <required>false</required>
     <scale>2</scale>

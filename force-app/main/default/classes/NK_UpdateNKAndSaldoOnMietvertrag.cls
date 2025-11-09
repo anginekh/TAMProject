@@ -55,7 +55,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 ];
             }
             List<Heizkosten__c> heizkosten = [
-                    SELECT Id, Mietvertrag__c, GesamtheizkostenWohnung__c
+                    SELECT Id, Mietvertrag__c, GesamtheizkostenWohnungNEU__c
                     FROM Heizkosten__c
                     WHERE Objekt__c = :nk.Objekt__c
                     AND Jahr__c = :nk.Jahr__c
@@ -124,6 +124,8 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 //Only for this year (2024), the field 'Nebenkosten bezahlt 2024' is used. From next year, the usual field 'Nebenkosten bezahlt' applies.
                 Decimal nebenkostenBezahlt = nk.Jahr__c == '2024' ? mietzahlungenByMietvertrag.get(mv.Id).NebenkostenBezahlt2024__c : mietzahlungenByMietvertrag.get(mv.Id).NebenkostenBezahlt__c;
 
+
+
                 if (mv.Eingezogen__c != null && mv.Eingezogen__c >= nextYearStart){
                     //todo: log an error (type : data inconsistency) for Holm and support to explain that this MV is connected to a MZ of a year (e.g. 2024) where the
                     //todo mv eingezogen is for the year after (e.g. 2025)
@@ -159,7 +161,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 betriebskostenToPay = monthlyWohnungBetriebskosten * monthsLivedThatYear;
                 offeneGebuehren = MieterMap.get(mv.Mieter__c).OffeneGebuehren__c;
 
-                Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(mv.Id) ? heizkostenByMietvertrag.get(mv.Id).GesamtheizkostenWohnung__c : 0;
+                Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(mv.Id) ? heizkostenByMietvertrag.get(mv.Id).GesamtheizkostenWohnungNEU__c : 0;
                 Decimal oldHeizkosten = mv.HeizkostenNeu__c;
 
                 // Step 1: monthly calculated heating cost

@@ -178,7 +178,7 @@
     <relatedLists>
         <fields>NAME</fields>
         <fields>Jahr__c</fields>
-        <fields>GesamtheizkostenWohnung__c</fields>
+        <fields>GesamtheizkostenWohnungNEU__c</fields>
         <relatedList>Heizkosten__c.Mietvertrag__c</relatedList>
     </relatedLists>
     <relatedLists>

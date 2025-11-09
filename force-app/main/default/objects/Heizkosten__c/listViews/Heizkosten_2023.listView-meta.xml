@@ -3,10 +3,7 @@
     <fullName>Heizkosten_2023</fullName>
     <columns>NAME</columns>
     <columns>Mietvertrag__c</columns>
-    <columns>AnteilHKVerbrauch__c</columns>
-    <columns>AnteilHKWohnflaeche__c</columns>
-    <columns>GesamtheizkostenObjekt__c</columns>
-    <columns>GesamtheizkostenWohnung__c</columns>
+    <columns>GesamtheizkostenWohnungNEU__c</columns>
     <columns>Objekt__c</columns>
     <filterScope>Mine</filterScope>
     <filters>
