@@ -30,8 +30,6 @@ global class NebenkostenActionable_ObjektAndLastYear implements cadmus_core.Abst
         /*
         Gebuehren
         GesamtHeizkostenWohnung
-        GesamtHeizkostenObjekt
-        GesamtHeizkostenObjektHaelfte
         */
 
     }

@@ -312,26 +312,6 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Heizkosten__c.AnteilHKVerbrauch__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Heizkosten__c.AnteilHKWohnflaeche__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Heizkosten__c.GesamtheizkostenObjekt__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Heizkosten__c.GesamtheizkostenWohnung__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>false</editable>
         <field>Heizkosten__c.GesamtheizkostenWohnungNEU__c</field>
         <readable>true</readable>
