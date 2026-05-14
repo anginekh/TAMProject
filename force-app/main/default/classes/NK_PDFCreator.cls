@@ -80,6 +80,24 @@ public with sharing class NK_PDFCreator{
 
         Map <Id, ContentVersion> mietvertragIdCVMap1 = new Map <Id, ContentVersion> ();
         Map <Id, ContentVersion> mietvertragIdCVMap2 = new Map <Id, ContentVersion> ();
+        List <SaldoNebenkosten__c> saldoList = [SELECT Id, Mietvertrag__c, Betrag__c, Jahr__c FROM SaldoNebenkosten__c WHERE Mietvertrag__c IN : mietvertragList];
+        Map <Id, Map<String,Decimal>> mvIdSaldoList = new Map <Id, Map<String,Decimal>> ();
+        for (SaldoNebenkosten__c s:saldoList){
+            if (!mvIdSaldoList.containsKey(s.Mietvertrag__c)) {
+                mvIdSaldoList.put(s.Mietvertrag__c, new Map <String, Decimal>());
+                mvIdSaldoList.get(s.Mietvertrag__c).put('PastYearsSaldo',0);
+                mvIdSaldoList.get(s.Mietvertrag__c).put('ThisYearSaldo',0);
+            }
+            if (s.Jahr__c == nkJahr) {
+                mvIdSaldoList.get(s.Mietvertrag__c).put('ThisYearSaldo',s.Betrag__c);
+                System.debug('im here - saldo of nk year : ' + s.Betrag__c);
+            } else {
+                Decimal previousSum = mvIdSaldoList.get(s.Mietvertrag__c).get('PastYearsSaldo');
+                mvIdSaldoList.get(s.Mietvertrag__c).put('PastYearsSaldo',s.Betrag__c + previousSum);
+                System.debug('im here - single saldo from last years : ' + s.Betrag__c + ' total until this calculation: ' + s.Betrag__c + previousSum);
+            }
+
+        }
         for (Mietvertrag__c m:mietvertragList){
             //String packName;
             String docConfigName;
@@ -151,12 +169,17 @@ public with sharing class NK_PDFCreator{
                 }
             }
 
+            Decimal pastYearsSaldo = (mvIdSaldoList.containsKey(m.Id) ? mvIdSaldoList.get(m.Id).get('PastYearsSaldo') : 0);
+            Decimal thisYearSaldo = (mvIdSaldoList.containsKey(m.Id) ? mvIdSaldoList.get(m.Id).get('ThisYearSaldo') : 0);
+
 
             singleDS.put('StartDate', startDate.format());
             singleDS.put('EndDate', endDate.format());
             singleDS.put('MonthsLivedThisYear', monthsLivedThisYear);
             singleDS.put('Gebuehren', gebuehren);
             singleDS.put('NKJahr', nkJahr);
+            singleDS.put('PastYearsSaldo', pastYearsSaldo);
+            singleDS.put('ThisYearSaldo', thisYearSaldo);
 
             //pass Anteil nebenkosten as variables
             /*Allgemeinstrom__c, EntwaesserungNiederschlag__c,
