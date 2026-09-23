@@ -632,10 +632,16 @@ public with sharing class VMT_DropboxUploadQueueable
                 if (uploadRes.getStatusCode() < 200 ||
                         uploadRes.getStatusCode() >= 300) {
 
+                    documentsWithProcessingErrors.add(
+                            documentId
+                    );
                     System.debug(
-                            'Dropbox upload failed for '
+                            LoggingLevel.ERROR,
+                            'Dropbox upload failed for ContentDocument '
                                     + documentId
-                                    + ': '
+                                    + ': ' +
+                                    uploadRes.getStatusCode() +
+                                    ' ' +
                                     + uploadRes.getBody()
                     );
 
