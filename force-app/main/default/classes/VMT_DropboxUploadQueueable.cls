@@ -8,7 +8,6 @@ public with sharing class VMT_DropboxUploadQueueable
     private Set<Id> contentDocumentIds;
 
     public VMT_DropboxUploadQueueable(Set<Id> contentDocumentIds) {
-
         this.contentDocumentIds = contentDocumentIds;
     }
 
@@ -16,24 +15,40 @@ public with sharing class VMT_DropboxUploadQueueable
 
         /*
          * -------------------------------------------------
+         * Basic validation
+         * -------------------------------------------------
+         */
+
+        if (contentDocumentIds == null || contentDocumentIds.isEmpty()) {
+            System.debug('No ContentDocumentIds supplied.');
+            return;
+        }
+
+
+        /*
+         * -------------------------------------------------
          * STEP 1
-         * Query latest versions
+         * Query latest ContentVersions
          * -------------------------------------------------
          */
 
         List<ContentVersion> versions = [
-
                 SELECT Id,
                         Title,
                         FileExtension,
                         VersionData,
                         ContentDocumentId
-
                 FROM ContentVersion
-
                 WHERE ContentDocumentId IN :contentDocumentIds
                 AND IsLatest = TRUE
         ];
+
+
+        if (versions.isEmpty()) {
+            System.debug('No latest ContentVersions found.');
+            return;
+        }
+
 
         /*
          * -------------------------------------------------
@@ -43,200 +58,516 @@ public with sharing class VMT_DropboxUploadQueueable
          */
 
         List<ContentDocumentLink> docLinks = [
-
                 SELECT ContentDocumentId,
                         LinkedEntityId,
                         LinkedEntity.Type
-
                 FROM ContentDocumentLink
-
                 WHERE ContentDocumentId IN :contentDocumentIds
         ];
 
-        System.debug('im here 1 : doc links' + docLinks);
-        //ignoring the duplicate cdl, associated with user
-        List<ContentDocumentLink> filteredLinks = new List<ContentDocumentLink>();
+
+        System.debug(
+                'STEP 2 - Original ContentDocumentLinks: ' + docLinks
+        );
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 3
+         * Filter User ContentDocumentLinks
+         * -------------------------------------------------
+         *
+         * Salesforce User Ids start with 005.
+         */
+
+        List<ContentDocumentLink> filteredLinks =
+                new List<ContentDocumentLink>();
+
         for (ContentDocumentLink cdl : docLinks) {
-            if (!String.valueOf(cdl.LinkedEntityId).startsWith('005')) {
-                filteredLinks.add(cdl);
+
+            if (cdl.LinkedEntityId == null) {
+                continue;
             }
+
+            if (String.valueOf(cdl.LinkedEntityId).startsWith('005')) {
+                continue;
+            }
+
+            filteredLinks.add(cdl);
         }
 
         docLinks = filteredLinks;
 
-        System.debug('im here 2: filtered doc links' + docLinks);
+
+        System.debug(
+                'STEP 3 - Filtered ContentDocumentLinks: ' + docLinks
+        );
+
+
         /*
          * -------------------------------------------------
-         * STEP 3
-         * Collect EmailMessage IDs
+         * STEP 4
+         * Group ContentDocumentLinks by ContentDocument
          * -------------------------------------------------
          */
 
-        Set<Id> emailMessageIds = new Set<Id>();
-
-        Map<Id, List<ContentDocumentLink>> linksByDoc =
+        Map<Id, List<ContentDocumentLink>> linksByDocument =
                 new Map<Id, List<ContentDocumentLink>>();
 
-        for(ContentDocumentLink cdl : docLinks) {
+        Set<Id> emailMessageIds = new Set<Id>();
+        Set<Id> caseIds = new Set<Id>();
+        Set<Id> accountIds = new Set<Id>();
 
-            if(!linksByDoc.containsKey(cdl.ContentDocumentId)) {
 
-                linksByDoc.put(
+        for (ContentDocumentLink cdl : docLinks) {
+
+            if (!linksByDocument.containsKey(cdl.ContentDocumentId)) {
+                linksByDocument.put(
                         cdl.ContentDocumentId,
                         new List<ContentDocumentLink>()
                 );
             }
 
-            linksByDoc.get(cdl.ContentDocumentId).add(cdl);
+            linksByDocument.get(cdl.ContentDocumentId).add(cdl);
 
-            if(cdl.LinkedEntityId.getSobjectType() ==
+
+            if (cdl.LinkedEntityId == null) {
+                continue;
+            }
+
+
+            /*
+             * EmailMessage
+             */
+
+            if (cdl.LinkedEntityId.getSObjectType() ==
                     EmailMessage.SObjectType) {
 
                 emailMessageIds.add(cdl.LinkedEntityId);
             }
+
+
+            /*
+             * Direct Case
+             */
+
+            else if (cdl.LinkedEntityId.getSObjectType() ==
+                    Case.SObjectType) {
+
+                caseIds.add(cdl.LinkedEntityId);
+            }
+
+
+            /*
+             * Direct Account / Mieter
+             */
+
+            else if (cdl.LinkedEntityId.getSObjectType() ==
+                    Account.SObjectType) {
+
+                accountIds.add(cdl.LinkedEntityId);
+            }
         }
+
 
         /*
          * -------------------------------------------------
-         * STEP 4
-         * Query EmailMessages + Parent Case
+         * STEP 5
+         * Query EmailMessages
          * -------------------------------------------------
          */
 
         Map<Id, EmailMessage> emailMap =
                 new Map<Id, EmailMessage>();
 
-        if(!emailMessageIds.isEmpty()) {
+
+        if (!emailMessageIds.isEmpty()) {
 
             emailMap = new Map<Id, EmailMessage>([
-
                     SELECT Id,
                             ParentId,
-                            Parent.CaseNumber
-
+                            Parent.CaseNumber,
+                            RelatedToId
                     FROM EmailMessage
-
                     WHERE Id IN :emailMessageIds
             ]);
         }
 
-        /*
-         * -------------------------------------------------
-         * STEP 5
-         * Prepare inserts
-         * -------------------------------------------------
-         */
-
-        List<FileLink__c> fileLinksToInsert = new List<FileLink__c>();
-
-        Http http = new Http();
 
         /*
          * -------------------------------------------------
          * STEP 6
-         * Process each file
+         * Query Cases
          * -------------------------------------------------
          */
 
-        for(ContentVersion cv : versions) {
+        Map<Id, Case> caseMap =
+                new Map<Id, Case>();
+
+
+        if (!caseIds.isEmpty()) {
+
+            caseMap = new Map<Id, Case>([
+                    SELECT Id,
+                            CaseNumber
+                    FROM Case
+                    WHERE Id IN :caseIds
+            ]);
+        }
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 7
+         * Query Accounts / Mieter
+         * -------------------------------------------------
+         *
+         * We query the Account so the Mieter relationship
+         * is explicitly validated as an Account.
+         */
+
+        Map<Id, Account> accountMap =
+                new Map<Id, Account>();
+
+
+        if (!accountIds.isEmpty()) {
+
+            accountMap = new Map<Id, Account>([
+                    SELECT Id,
+                            Name
+                    FROM Account
+                    WHERE Id IN :accountIds
+            ]);
+        }
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 8
+         * Prepare FileLink records
+         * -------------------------------------------------
+         *
+         * These two lists intentionally have identical
+         * indexes:
+         *
+         * fileLinksToInsert[0]
+         *     -> fileLinkDocumentIds[0]
+         */
+
+        List<FileLink__c> fileLinksToInsert =
+                new List<FileLink__c>();
+
+        List<Id> fileLinkDocumentIds =
+                new List<Id>();
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 9
+         * Track processing errors
+         * -------------------------------------------------
+         *
+         * If ANY exception occurs while processing a
+         * ContentDocument, that document must NOT be
+         * deleted during this execution.
+         */
+
+        Set<Id> documentsWithProcessingErrors =
+                new Set<Id>();
+
+
+        Http http = new Http();
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 10
+         * Process each ContentDocument
+         * -------------------------------------------------
+         */
+
+        for (ContentVersion cv : versions) {
+
+            Id documentId = cv.ContentDocumentId;
+
 
             try {
 
                 /*
                  * ---------------------------------------------
-                 * Build file name
+                 * Get relevant ContentDocumentLinks
+                 * ---------------------------------------------
+                 */
+
+                List<ContentDocumentLink> relatedLinks =
+                        linksByDocument.get(documentId);
+
+
+                if (relatedLinks == null ||
+                        relatedLinks.isEmpty()) {
+
+                    System.debug(
+                            'No relevant ContentDocumentLinks for '
+                                    + documentId
+                                    + '. ContentDocument will remain.'
+                    );
+
+                    continue;
+                }
+
+
+                /*
+                 * ---------------------------------------------
+                 * Build original filename
                  * ---------------------------------------------
                  */
 
                 String originalName = cv.Title;
 
-                String extension = '';
-                if(String.isNotBlank(cv.FileExtension)) {
-
-                    extension += '.' + cv.FileExtension;
+                if (String.isBlank(originalName)) {
+                    originalName = 'SalesforceFile';
                 }
 
-                List<ContentDocumentLink> relatedLinks =
-                        linksByDoc.get(cv.ContentDocumentId);
 
-                String relatedEmailId;
-                String caseId;
-                String caseNumber;
-                String mieterAccountId;
-                String mietvertragId;
-                String mietvertragName;
-                if(relatedLinks != null) {
+                String extension = '';
 
-                    for(ContentDocumentLink cdl : relatedLinks) {
+                if (String.isNotBlank(cv.FileExtension)) {
+                    extension = '.' + cv.FileExtension;
+                }
 
 
-                        //if related to email
-                        if(cdl.LinkedEntityId.getSobjectType() == EmailMessage.SObjectType) {
-                            EmailMessage em = emailMap.get( cdl.LinkedEntityId);
-                            relatedEmailId = em.Id;
-                            //connect to case
-                            if (em.ParentId != null){
-                                caseId = em.ParentId;
-                                caseNumber = String.valueOf(em.Parent.get('CaseNumber'));
-                                break;
-                                //connect to Mieter
-                            }else if (em.RelatedToId != null){
-                                mieterAccountId = em.RelatedToId;
-                                break;
-                            }
+                originalName = originalName.replaceAll(
+                        '[^a-zA-Z0-9._-]',
+                        '_'
+                );
 
-                            //if related to automatedprocess (the case of NK) - ignore
-                        } else if (cdl.LinkedEntityId == '005J6000000YNkTIAW'){continue;}
-                        //if related to Mietvertrag
-                        else if (cdl.LinkedEntityId.getSobjectType() == Mietvertrag__c.SObjectType){
-                            mietvertragId = cdl.LinkedEntityId;
-                            break;
-                            //todo: get the MV name
-                        }
-                    }
-
-                /*
-                 * Current DateTime
-                 */
-                String datetimeString =
-                        Datetime.now().format();
-
-                /*
-                 * Sanitize filename
-                 */
-                originalName =
-                        originalName.replaceAll(
-                                '[^a-zA-Z0-9._-]',
-                                '_'
-                        );
-
-                caseNumber =
-                        caseNumber.replaceAll(
-                                '[^a-zA-Z0-9_-]',
-                                '_'
-                        );
-
-                /*
-                 * Final filename
-                 */
-
-                //todo: replace mietvertragid with mietvertragname and the same for mieter
-
-                String fileName = (caseNumber!=null? 'Case:'+caseNumber + '_':'') + (mieterAccountId!=null? 'MieterId:'+mieterAccountId+ '_':'') + (mietvertragId!=null?'MVId:'+mietvertragId
-                        + '_':'')
-                        + datetimeString
-                        + '_'
-                        + originalName
-                        + extension;
 
                 /*
                  * ---------------------------------------------
-                 * Dropbox upload path
+                 * Current DateTime
+                 * ---------------------------------------------
+                 */
+
+                String datetimeString =
+                        Datetime.now().format();
+
+
+                /*
+                 * ---------------------------------------------
+                 * Determine filename relationship information
+                 * ---------------------------------------------
+                 *
+                 * These values are only used for the Dropbox
+                 * filename.
+                 *
+                 * FileLink relationships are determined
+                 * independently for each CDL below.
+                 */
+
+                String filenameCaseNumber;
+                String filenameMieterId;
+                String filenameMietvertragId;
+
+
+                for (ContentDocumentLink cdl : relatedLinks) {
+
+                    if (cdl.LinkedEntityId == null) {
+                        continue;
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * EmailMessage
+                     * -----------------------------------------
+                     */
+
+                    if (cdl.LinkedEntityId.getSObjectType() ==
+                            EmailMessage.SObjectType) {
+
+                        EmailMessage em =
+                                emailMap.get(cdl.LinkedEntityId);
+
+
+                        if (em == null) {
+                            continue;
+                        }
+
+
+                        /*
+                         * Email -> Case
+                         */
+
+                        if (em.ParentId != null &&
+                                filenameCaseNumber == null) {
+
+                            filenameCaseNumber =
+                                    em.Parent != null
+                                            ? em.Parent.CaseNumber
+                                            : null;
+                        }
+
+
+                        /*
+                         * Email -> Mieter Account
+                         */
+
+                        if (em.RelatedToId != null &&
+                                em.RelatedToId.getSObjectType() ==
+                                        Account.SObjectType &&
+                                filenameMieterId == null) {
+
+                            filenameMieterId =
+                                    String.valueOf(em.RelatedToId);
+                        }
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * Direct Case
+                     * -----------------------------------------
+                     */
+
+                    else if (
+                            cdl.LinkedEntityId.getSObjectType() ==
+                                    Case.SObjectType
+                    ) {
+
+                        Case linkedCase =
+                                caseMap.get(cdl.LinkedEntityId);
+
+
+                        if (linkedCase != null &&
+                                filenameCaseNumber == null) {
+
+                            filenameCaseNumber =
+                                    linkedCase.CaseNumber;
+                        }
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * Direct Account / Mieter
+                     * -----------------------------------------
+                     */
+
+                    else if (
+                            cdl.LinkedEntityId.getSObjectType() ==
+                                    Account.SObjectType
+                    ) {
+
+                        /*
+                         * We already queried the Account.
+                         *
+                         * The ID is sufficient for the current
+                         * filename convention.
+                         */
+
+                        if (accountMap.containsKey(
+                                cdl.LinkedEntityId
+                        )
+                                &&
+                                filenameMieterId == null) {
+
+                            filenameMieterId =
+                                    String.valueOf(
+                                            cdl.LinkedEntityId
+                                    );
+                        }
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * Mietvertrag
+                     * -----------------------------------------
+                     */
+
+                    else if (
+                            cdl.LinkedEntityId.getSObjectType() ==
+                                    Mietvertrag__c.SObjectType
+                    ) {
+
+                        if (filenameMietvertragId == null) {
+
+                            filenameMietvertragId =
+                                    String.valueOf(
+                                            cdl.LinkedEntityId
+                                    );
+                        }
+                    }
+                }
+
+
+                /*
+                 * Sanitize CaseNumber.
+                 */
+
+                if (String.isNotBlank(filenameCaseNumber)) {
+
+                    filenameCaseNumber =
+                            filenameCaseNumber.replaceAll(
+                                    '[^a-zA-Z0-9_-]',
+                                    '_'
+                            );
+                }
+
+
+                /*
+                 * ---------------------------------------------
+                 * Build Dropbox filename
+                 * ---------------------------------------------
+                 */
+
+                String fileName =
+                        (String.isNotBlank(filenameCaseNumber)
+                                ? 'Case:' + filenameCaseNumber + '_'
+                                : '')
+                                +
+                                (String.isNotBlank(filenameMieterId)
+                                        ? 'MieterId:' + filenameMieterId + '_'
+                                        : '')
+                                +
+                                (String.isNotBlank(filenameMietvertragId)
+                                        ? 'MVId:' + filenameMietvertragId + '_'
+                                        : '')
+                                +
+                                datetimeString
+                                + '_'
+                                + originalName
+                                + extension;
+
+
+                /*
+                 * ---------------------------------------------
+                 * Dropbox path
                  * ---------------------------------------------
                  */
 
                 String dropboxPath =
-                        '/SalesforceFiles_AutomatedUpload/' + fileName;
+                        '/SalesforceFiles_AutomatedUpload/'
+                                + fileName;
+
+
+                /*
+                 * ---------------------------------------------
+                 * Get Dropbox access token
+                 * ---------------------------------------------
+                 */
+
+                String token =
+                        VMT_DropboxTokenService.getAccessToken();
+
+
+                if (String.isBlank(token)) {
+
+                    throw new CalloutException(
+                            'Dropbox access token is blank.'
+                    );
+                }
+
 
                 /*
                  * ---------------------------------------------
@@ -244,9 +575,8 @@ public with sharing class VMT_DropboxUploadQueueable
                  * ---------------------------------------------
                  */
 
-                String token = VMT_DropboxTokenService.getAccessToken();
-
-                HttpRequest uploadReq = new HttpRequest();
+                HttpRequest uploadReq =
+                        new HttpRequest();
 
                 uploadReq.setEndpoint(
                         'https://content.dropboxapi.com/2/files/upload'
@@ -276,25 +606,42 @@ public with sharing class VMT_DropboxUploadQueueable
                         )
                 );
 
-                uploadReq.setBodyAsBlob(cv.VersionData);
-
-                HttpResponse uploadRes = http.send(uploadReq);
-
-                System.debug(
-                        'UPLOAD RESPONSE: ' + uploadRes.getBody()
+                uploadReq.setBodyAsBlob(
+                        cv.VersionData
                 );
 
-                if(uploadRes.getStatusCode() < 200 ||
+
+                HttpResponse uploadRes =
+                        http.send(uploadReq);
+
+
+                System.debug(
+                        'Dropbox upload response for '
+                                + documentId
+                                + ': '
+                                + uploadRes.getStatusCode()
+                                + ' '
+                                + uploadRes.getBody()
+                );
+
+
+                /*
+                 * Upload failed.
+                 */
+
+                if (uploadRes.getStatusCode() < 200 ||
                         uploadRes.getStatusCode() >= 300) {
 
-                    //todo: add error/exception logging
                     System.debug(
-                            'Dropbox upload failed: '
+                            'Dropbox upload failed for '
+                                    + documentId
+                                    + ': '
                                     + uploadRes.getBody()
                     );
 
                     continue;
                 }
+
 
                 /*
                  * ---------------------------------------------
@@ -308,10 +655,23 @@ public with sharing class VMT_DropboxUploadQueueable
                                         uploadRes.getBody()
                                 );
 
+
                 String uploadedPath =
                         (String) uploadResult.get(
                                 'path_lower'
                         );
+
+
+                if (String.isBlank(uploadedPath)) {
+
+                    System.debug(
+                            'Dropbox upload returned no path for '
+                                    + documentId
+                    );
+
+                    continue;
+                }
+
 
                 /*
                  * ---------------------------------------------
@@ -319,18 +679,38 @@ public with sharing class VMT_DropboxUploadQueueable
                  * ---------------------------------------------
                  */
 
-                String token1 = VMT_DropboxTokenService.getAccessToken();
+                String shareToken =
+                        VMT_DropboxTokenService.getAccessToken();
 
-                HttpRequest shareReq = new HttpRequest();
+
+                if (String.isBlank(shareToken)) {
+
+                    throw new CalloutException(
+                            'Dropbox access token for shared link is blank.'
+                    );
+                }
+
+
+                HttpRequest shareReq =
+                        new HttpRequest();
+
+
                 shareReq.setEndpoint(
                         'https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings'
                 );
+
                 shareReq.setMethod('POST');
+
                 shareReq.setHeader(
-                    'Authorization',
-                    'Bearer ' + token1
+                        'Authorization',
+                        'Bearer ' + shareToken
                 );
-                shareReq.setHeader('Content-Type', 'application/json');
+
+                shareReq.setHeader(
+                        'Content-Type',
+                        'application/json'
+                );
+
                 shareReq.setBody(
                         JSON.serialize(
                                 new Map<String, Object>{
@@ -339,43 +719,84 @@ public with sharing class VMT_DropboxUploadQueueable
                         )
                 );
 
-                HttpResponse shareRes = http.send(shareReq);
+
+                HttpResponse shareRes =
+                        http.send(shareReq);
+
 
                 String sharedUrl;
+
+
+                /*
+                 * ---------------------------------------------
+                 * Shared link created successfully
+                 * ---------------------------------------------
+                 */
 
                 if (shareRes.getStatusCode() >= 200 &&
                         shareRes.getStatusCode() < 300) {
 
-                    Map<String, Object> result =
-                            (Map<String, Object>) JSON.deserializeUntyped(
-                                    shareRes.getBody()
-                            );
+                    Map<String, Object> shareResult =
+                            (Map<String, Object>)
+                                    JSON.deserializeUntyped(
+                                            shareRes.getBody()
+                                    );
 
-                    sharedUrl = (String) result.get('url');
+
+                    sharedUrl =
+                            (String) shareResult.get('url');
                 }
+
+
+                /*
+                 * ---------------------------------------------
+                 * Shared link creation failed
+                 * ---------------------------------------------
+                 */
+
                 else {
 
-                    Map<String, Object> errorBody =
-                            (Map<String, Object>) JSON.deserializeUntyped(
-                                    shareRes.getBody()
+                    String errorBody =
+                            shareRes.getBody();
+
+
+                    if (errorBody != null &&
+                            errorBody.contains(
+                                    'shared_link_already_exists'
+                            )) {
+
+                        String listToken =
+                                VMT_DropboxTokenService.getAccessToken();
+
+
+                        if (String.isBlank(listToken)) {
+
+                            throw new CalloutException(
+                                    'Dropbox access token for existing shared link is blank.'
                             );
+                        }
 
-                    String errorJson = JSON.serialize(errorBody);
 
-                    // Shared link already exists
-                    String token2 = VMT_DropboxTokenService.getAccessToken();
-                    if (errorJson.contains('shared_link_already_exists')) {
+                        HttpRequest listReq =
+                                new HttpRequest();
 
-                        HttpRequest listReq = new HttpRequest();
+
                         listReq.setEndpoint(
-                                'callout:DropboxAPI_NC/2/sharing/list_shared_links'
+                                'https://api.dropboxapi.com/2/sharing/list_shared_links'
                         );
+
                         listReq.setMethod('POST');
+
                         listReq.setHeader(
                                 'Authorization',
-                                'Bearer ' + token2
+                                'Bearer ' + listToken
                         );
-                        listReq.setHeader('Content-Type', 'application/json');
+
+                        listReq.setHeader(
+                                'Content-Type',
+                                'application/json'
+                        );
+
                         listReq.setBody(
                                 JSON.serialize(
                                         new Map<String, Object>{
@@ -385,123 +806,344 @@ public with sharing class VMT_DropboxUploadQueueable
                                 )
                         );
 
-                        HttpResponse listRes = http.send(listReq);
+
+                        HttpResponse listRes =
+                                http.send(listReq);
+
 
                         if (listRes.getStatusCode() >= 200 &&
                                 listRes.getStatusCode() < 300) {
 
                             Map<String, Object> listResult =
-                                    (Map<String, Object>) JSON.deserializeUntyped(
-                                            listRes.getBody()
-                                    );
+                                    (Map<String, Object>)
+                                            JSON.deserializeUntyped(
+                                                    listRes.getBody()
+                                            );
+
 
                             List<Object> links =
-                                    (List<Object>) listResult.get('links');
+                                    (List<Object>)
+                                            listResult.get('links');
 
-                            if (!links.isEmpty()) {
+
+                            if (links != null &&
+                                    !links.isEmpty()) {
+
                                 Map<String, Object> firstLink =
-                                        (Map<String, Object>) links[0];
+                                        (Map<String, Object>)
+                                                links[0];
 
-                                sharedUrl = (String) firstLink.get('url');
+
+                                sharedUrl =
+                                        (String) firstLink.get('url');
                             }
                         }
+
                         else {
-                            System.debug(
-                                    'Failed to retrieve existing shared link: '
+
+                            throw new CalloutException(
+                                    'Failed to retrieve existing Dropbox shared link: '
                                             + listRes.getBody()
                             );
-                            continue;
                         }
                     }
+
                     else {
-                        System.debug(
-                                'Dropbox share failed: ' + shareRes.getBody()
+
+                        throw new CalloutException(
+                                'Dropbox shared-link creation failed: '
+                                        + errorBody
                         );
-                        continue;
                     }
                 }
 
-                System.debug('Shared URL: ' + sharedUrl);
 
                 /*
                  * ---------------------------------------------
-                 * Find related EmailMessage
+                 * Validate shared URL
                  * ---------------------------------------------
                  */
 
-                List<ContentDocumentLink> relatedLinks2 =
-                        linksByDoc.get(
-                                cv.ContentDocumentId
-                        );
+                if (String.isBlank(sharedUrl)) {
 
-                if(relatedLinks2 == null) {
-                    continue;
+                    throw new CalloutException(
+                            'Dropbox did not return a shared URL for '
+                                    + documentId
+                    );
                 }
 
-                for(ContentDocumentLink cdl : relatedLinks2) {
-                    //if related to email
-                    if(cdl.LinkedEntityId.getSobjectType() == EmailMessage.SObjectType) {
-                        EmailMessage em = emailMap.get( cdl.LinkedEntityId);
-                        relatedEmailId = em.Id;
-                        //connect to case
-                        if (em.ParentId != null){
-                            caseId = em.ParentId;
-                            caseNumber = String.valueOf(em.Parent.get('CaseNumber'));
-                        //connect to Mieter
-                        }else if (em.RelatedToId != null){
-                            mieterAccountId = em.RelatedToId;
-                        }
 
-                    //if related to automatedprocess (the case of NK) - ignore
-                    } else if (cdl.LinkedEntityId == '005J6000000YNkTIAW'){continue;}
-                    //if related to Mietvertrag
-                    else if (cdl.LinkedEntityId.getSobjectType() == Mietvertrag__c.SObjectType){
-                        mietvertragId = cdl.LinkedEntityId;
-                        //todo: get the MV name
-                        }
+                /*
+                 * ---------------------------------------------
+                 * Create ONE FileLink__c per CDL
+                 * ---------------------------------------------
+                 */
+
+                Integer preparedFileLinkCount = 0;
+
+
+                for (ContentDocumentLink cdl : relatedLinks) {
+
+                    if (cdl.LinkedEntityId == null) {
+                        continue;
                     }
+
+
+                    FileLink__c fl =
+                            new FileLink__c();
+
 
                     /*
                      * -----------------------------------------
-                     * Create File_Link__c
+                     * Relationship fields for THIS CDL only
                      * -----------------------------------------
                      */
 
+                    Id fileLinkCaseId;
+                    Id fileLinkEmailId;
+                    Id fileLinkMieterId;
+                    Id fileLinkMietvertragId;
+
+                    String fileLinkCaseNumber;
 
 
-                    FileLink__c fl = new FileLink__c();
+                    /*
+                     * -----------------------------------------
+                     * EmailMessage
+                     * -----------------------------------------
+                     */
 
-                    String fileNameString = (caseNumber!=null? 'Case:'+caseNumber + '_':'') + (mieterAccountId!=null? 'MieterId:'+mieterAccountId+ '_':'') + (mietvertragId!=null?'MVId:'+mietvertragId
-                            + '_':'')
-                            + datetimeString
-                            + '_'
-                            + originalName;
+                    if (cdl.LinkedEntityId.getSObjectType() ==
+                            EmailMessage.SObjectType) {
 
-                    fl.Name = fileNameString.substring(0,Math.min(80, fileNameString.length()));
+                        EmailMessage em =
+                                emailMap.get(cdl.LinkedEntityId);
 
-                    System.debug('im here '+ fl.Name);
 
-                    fl.DropboxLink__c = sharedUrl;
+                        if (em != null) {
 
-                    //fl.DropboxFileId__c
+                            fileLinkEmailId =
+                                    em.Id;
 
-                    fl.DropboxPath__c = uploadedPath;
 
-                    fl.Case__c = caseId;
+                            /*
+                             * Email -> Case
+                             */
 
-                    fl.RelatedEmailId__c = relatedEmailId;
+                            if (em.ParentId != null) {
 
-                    fl.Mietvertrag__c = mietvertragId;
+                                fileLinkCaseId =
+                                        em.ParentId;
 
-                    fl.Mieter__c = mieterAccountId;
+
+                                if (em.Parent != null) {
+
+                                    fileLinkCaseNumber =
+                                            em.Parent.CaseNumber;
+                                }
+                            }
+
+
+                            /*
+                             * Email -> Mieter Account
+                             */
+
+                            if (em.RelatedToId != null &&
+                                    em.RelatedToId.getSObjectType() ==
+                                            Account.SObjectType) {
+
+                                fileLinkMieterId =
+                                        em.RelatedToId;
+                            }
+                        }
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * Direct Case
+                     * -----------------------------------------
+                     */
+
+                    else if (
+                            cdl.LinkedEntityId.getSObjectType() ==
+                                    Case.SObjectType
+                    ) {
+
+                        fileLinkCaseId =
+                                cdl.LinkedEntityId;
+
+
+                        Case linkedCase =
+                                caseMap.get(cdl.LinkedEntityId);
+
+
+                        if (linkedCase != null) {
+
+                            fileLinkCaseNumber =
+                                    linkedCase.CaseNumber;
+                        }
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * Direct Account / Mieter
+                     * -----------------------------------------
+                     */
+
+                    else if (
+                            cdl.LinkedEntityId.getSObjectType() ==
+                                    Account.SObjectType
+                    ) {
+
+                        /*
+                         * This ContentDocumentLink itself points
+                         * directly to the Mieter Account.
+                         */
+
+                        if (accountMap.containsKey(
+                                cdl.LinkedEntityId
+                        )) {
+
+                            fileLinkMieterId =
+                                    cdl.LinkedEntityId;
+                        }
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * Mietvertrag
+                     * -----------------------------------------
+                     */
+
+                    else if (
+                            cdl.LinkedEntityId.getSObjectType() ==
+                                    Mietvertrag__c.SObjectType
+                    ) {
+
+                        fileLinkMietvertragId =
+                                cdl.LinkedEntityId;
+                    }
+
+
+                    /*
+                     * -----------------------------------------
+                     * FileLink Name
+                     * -----------------------------------------
+                     */
+
+                    if (String.isNotBlank(fileLinkCaseNumber)) {
+
+                        fileLinkCaseNumber =
+                                fileLinkCaseNumber.replaceAll(
+                                        '[^a-zA-Z0-9_-]',
+                                        '_'
+                                );
+                    }
+
+
+                    String fileLinkName =
+                            (String.isNotBlank(fileLinkCaseNumber)
+                                    ? 'Case:' + fileLinkCaseNumber + '_'
+                                    : '')
+                                    +
+                                    (fileLinkMieterId != null
+                                            ? 'MieterId:' + fileLinkMieterId + '_'
+                                            : '')
+                                    +
+                                    (fileLinkMietvertragId != null
+                                            ? 'MVId:' + fileLinkMietvertragId + '_'
+                                            : '')
+                                    +
+                                    datetimeString
+                                    + '_'
+                                    + originalName;
+
+
+                    fl.Name =
+                            fileLinkName.substring(
+                                    0,
+                                    Math.min(
+                                            80,
+                                            fileLinkName.length()
+                                    )
+                            );
+
+
+                    /*
+                     * Dropbox fields
+                     */
+
+                    fl.DropboxLink__c =
+                            sharedUrl;
+
+                    fl.DropboxPath__c =
+                            uploadedPath;
+
+
+                    /*
+                     * Salesforce relationship fields
+                     */
+
+                    fl.Case__c =
+                            fileLinkCaseId;
+
+                    fl.RelatedEmailId__c =
+                            fileLinkEmailId;
+
+                    fl.Mietvertrag__c =
+                            fileLinkMietvertragId;
+
+                    fl.Mieter__c =
+                            fileLinkMieterId;
+
+
+                    /*
+                     * Add FileLink and corresponding document
+                     * ID at exactly the same index.
+                     */
 
                     fileLinksToInsert.add(fl);
+
+                    fileLinkDocumentIds.add(documentId);
+
+                    preparedFileLinkCount++;
                 }
 
-            } catch(Exception ex) {
+
+                /*
+                 * Sanity check.
+                 */
+
+                if (preparedFileLinkCount == 0) {
+
+                    System.debug(
+                            'No FileLink__c records prepared for '
+                                    + documentId
+                                    + '. ContentDocument will remain.'
+                    );
+                }
+            }
+
+
+            catch (Exception ex) {
+
+                /*
+                 * Any exception makes this ContentDocument
+                 * ineligible for deletion.
+                 */
+
+                documentsWithProcessingErrors.add(
+                        documentId
+                );
+
 
                 System.debug(
-                        'Dropbox Queueable Error: '
+                        'Dropbox Queueable processing error for '
+                                + documentId
+                                + ': '
                                 + ex.getMessage()
                 );
 
@@ -511,16 +1153,309 @@ public with sharing class VMT_DropboxUploadQueueable
             }
         }
 
+
         /*
          * -------------------------------------------------
-         * STEP 7
-         * Insert File_Link__c records
+         * STEP 11
+         * Insert FileLink__c records
          * -------------------------------------------------
          */
 
-        if(!fileLinksToInsert.isEmpty()) {
+        if (fileLinksToInsert.isEmpty()) {
 
-            insert fileLinksToInsert;
+            System.debug(
+                    'No FileLink__c records to insert.'
+            );
+
+            return;
+        }
+
+
+        Database.SaveResult[] saveResults =
+                Database.insert(
+                        fileLinksToInsert,
+                        false
+                );
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 12
+         * Count expected and successful FileLinks
+         * -------------------------------------------------
+         */
+
+        Map<Id, Integer> expectedFileLinkCount =
+                new Map<Id, Integer>();
+
+        Map<Id, Integer> successfulFileLinkCount =
+                new Map<Id, Integer>();
+
+        Set<Id> documentsWithFailedFileLinks =
+                new Set<Id>();
+
+
+        /*
+         * Count expected FileLinks.
+         */
+
+        for (Integer i = 0;
+                i < fileLinksToInsert.size();
+                i++) {
+
+            Id documentId =
+                    fileLinkDocumentIds[i];
+
+
+            if (documentId == null) {
+                continue;
+            }
+
+
+            Integer currentExpected =
+                    expectedFileLinkCount.containsKey(documentId)
+                            ? expectedFileLinkCount.get(documentId)
+                            : 0;
+
+
+            expectedFileLinkCount.put(
+                    documentId,
+                    currentExpected + 1
+            );
+        }
+
+
+        /*
+         * Process SaveResults.
+         */
+
+        for (Integer i = 0;
+                i < saveResults.size();
+                i++) {
+
+            Database.SaveResult saveResult =
+                    saveResults[i];
+
+
+            Id documentId =
+                    fileLinkDocumentIds[i];
+
+
+            if (documentId == null) {
+                continue;
+            }
+
+
+            if (saveResult.isSuccess()) {
+
+                Integer currentSuccessful =
+                        successfulFileLinkCount.containsKey(documentId)
+                                ? successfulFileLinkCount.get(documentId)
+                                : 0;
+
+
+                successfulFileLinkCount.put(
+                        documentId,
+                        currentSuccessful + 1
+                );
+            }
+
+            else {
+
+                documentsWithFailedFileLinks.add(
+                        documentId
+                );
+
+
+                System.debug(
+                        'FileLink__c insertion failed for '
+                                + 'ContentDocument '
+                                + documentId
+                );
+
+
+                for (Database.Error error :
+                        saveResult.getErrors()) {
+
+                    System.debug(
+                            'FileLink Error StatusCode: '
+                                    + error.getStatusCode()
+                    );
+
+                    System.debug(
+                            'FileLink Error Message: '
+                                    + error.getMessage()
+                    );
+
+                    System.debug(
+                            'FileLink Error Fields: '
+                                    + error.getFields()
+                    );
+                }
+            }
+        }
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 13
+         * Determine ContentDocuments safe to delete
+         * -------------------------------------------------
+         */
+
+        Set<Id> documentsReadyForDeletion =
+                new Set<Id>();
+
+
+        for (Id documentId :
+                expectedFileLinkCount.keySet()) {
+
+            Integer expected =
+                    expectedFileLinkCount.get(
+                            documentId
+                    );
+
+
+            Integer successful =
+                    successfulFileLinkCount.containsKey(
+                            documentId
+                    )
+                            ? successfulFileLinkCount.get(
+                            documentId
+                    )
+                            : 0;
+
+
+            /*
+             * A ContentDocument may be deleted ONLY when:
+             *
+             * 1. No processing exception occurred.
+             * 2. No FileLink insert failed.
+             * 3. At least one FileLink was prepared.
+             * 4. Every expected FileLink was inserted.
+             */
+
+            if (!documentsWithProcessingErrors.contains(
+                    documentId
+            )
+                    &&
+                    !documentsWithFailedFileLinks.contains(
+                            documentId
+                    )
+                    &&
+                    expected > 0
+                    &&
+                    successful == expected) {
+
+                documentsReadyForDeletion.add(
+                        documentId
+                );
+            }
+        }
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 14
+         * Delete eligible ContentDocuments
+         * -------------------------------------------------
+         */
+
+        if (documentsReadyForDeletion.isEmpty()) {
+
+            System.debug(
+                    'No ContentDocuments are eligible for deletion.'
+            );
+
+            return;
+        }
+
+
+        List<ContentDocument> documentsToDelete = [
+                SELECT Id
+                FROM ContentDocument
+                WHERE Id IN :documentsReadyForDeletion
+        ];
+
+
+        if (documentsToDelete.isEmpty()) {
+
+            System.debug(
+                    'No eligible ContentDocuments were found.'
+            );
+
+            return;
+        }
+
+
+        /*
+         * Partial-success delete.
+         *
+         * One deletion failure must not roll back successful
+         * deletions of other ContentDocuments.
+         */
+
+        Database.DeleteResult[] deleteResults =
+                Database.delete(
+                        documentsToDelete,
+                        false
+                );
+
+
+        /*
+         * -------------------------------------------------
+         * STEP 15
+         * Check deletion results
+         * -------------------------------------------------
+         */
+
+        for (Integer i = 0;
+                i < deleteResults.size();
+                i++) {
+
+            Database.DeleteResult deleteResult =
+                    deleteResults[i];
+
+
+            Id documentId =
+                    documentsToDelete[i].Id;
+
+
+            if (deleteResult.isSuccess()) {
+
+                System.debug(
+                        'Successfully deleted ContentDocument '
+                                + documentId
+                );
+            }
+
+            else {
+
+                System.debug(
+                        'ContentDocument deletion failed for '
+                                + documentId
+                );
+
+
+                for (Database.Error error :
+                        deleteResult.getErrors()) {
+
+                    System.debug(
+                            'Delete Error StatusCode: '
+                                    + error.getStatusCode()
+                    );
+
+                    System.debug(
+                            'Delete Error Message: '
+                                    + error.getMessage()
+                    );
+
+                    System.debug(
+                            'Delete Error Fields: '
+                                    + error.getFields()
+                    );
+                }
+            }
         }
     }
 }
