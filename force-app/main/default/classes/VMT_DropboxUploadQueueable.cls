@@ -319,20 +319,18 @@ public with sharing class VMT_DropboxUploadQueueable
                  * ---------------------------------------------
                  */
 
-                /*HttpRequest shareReq =
-                        new HttpRequest();
+                String token1 = VMT_DropboxTokenService.getAccessToken();
 
+                HttpRequest shareReq = new HttpRequest();
                 shareReq.setEndpoint(
-                        'callout:DropboxAPI_NC/2/sharing/create_shared_link_with_settings'
+                        'https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings'
                 );
-
                 shareReq.setMethod('POST');
-
                 shareReq.setHeader(
-                        'Content-Type',
-                        'application/json'
+                    'Authorization',
+                    'Bearer ' + token1
                 );
-
+                shareReq.setHeader('Content-Type', 'application/json');
                 shareReq.setBody(
                         JSON.serialize(
                                 new Map<String, Object>{
@@ -341,49 +339,89 @@ public with sharing class VMT_DropboxUploadQueueable
                         )
                 );
 
-                HttpResponse shareRes =
-                        http.send(shareReq);
+                HttpResponse shareRes = http.send(shareReq);
 
-                System.debug(
-                        'SHARE RESPONSE: '
-                                + shareRes.getBody()
-                );
+                String sharedUrl;
 
-                if(shareRes.getStatusCode() < 200 ||
-                        shareRes.getStatusCode() >= 300) {
+                if (shareRes.getStatusCode() >= 200 &&
+                        shareRes.getStatusCode() < 300) {
 
-                    //todo: add error/exception logging
-                    System.debug(
-                            'Dropbox share failed'
-                    );
+                    Map<String, Object> result =
+                            (Map<String, Object>) JSON.deserializeUntyped(
+                                    shareRes.getBody()
+                            );
 
-                    continue;
+                    sharedUrl = (String) result.get('url');
+                }
+                else {
+
+                    Map<String, Object> errorBody =
+                            (Map<String, Object>) JSON.deserializeUntyped(
+                                    shareRes.getBody()
+                            );
+
+                    String errorJson = JSON.serialize(errorBody);
+
+                    // Shared link already exists
+                    String token2 = VMT_DropboxTokenService.getAccessToken();
+                    if (errorJson.contains('shared_link_already_exists')) {
+
+                        HttpRequest listReq = new HttpRequest();
+                        listReq.setEndpoint(
+                                'callout:DropboxAPI_NC/2/sharing/list_shared_links'
+                        );
+                        listReq.setMethod('POST');
+                        listReq.setHeader(
+                                'Authorization',
+                                'Bearer ' + token2
+                        );
+                        listReq.setHeader('Content-Type', 'application/json');
+                        listReq.setBody(
+                                JSON.serialize(
+                                        new Map<String, Object>{
+                                                'path' => uploadedPath,
+                                                'direct_only' => true
+                                        }
+                                )
+                        );
+
+                        HttpResponse listRes = http.send(listReq);
+
+                        if (listRes.getStatusCode() >= 200 &&
+                                listRes.getStatusCode() < 300) {
+
+                            Map<String, Object> listResult =
+                                    (Map<String, Object>) JSON.deserializeUntyped(
+                                            listRes.getBody()
+                                    );
+
+                            List<Object> links =
+                                    (List<Object>) listResult.get('links');
+
+                            if (!links.isEmpty()) {
+                                Map<String, Object> firstLink =
+                                        (Map<String, Object>) links[0];
+
+                                sharedUrl = (String) firstLink.get('url');
+                            }
+                        }
+                        else {
+                            System.debug(
+                                    'Failed to retrieve existing shared link: '
+                                            + listRes.getBody()
+                            );
+                            continue;
+                        }
+                    }
+                    else {
+                        System.debug(
+                                'Dropbox share failed: ' + shareRes.getBody()
+                        );
+                        continue;
+                    }
                 }
 
-                /*
-                 * ---------------------------------------------
-                 * Parse share response
-                 * ---------------------------------------------
-                 */
-
-                /*Map<String, Object> shareResult =
-                        (Map<String, Object>)
-                                JSON.deserializeUntyped(
-                                        shareRes.getBody()
-                                );
-
-                String sharedUrl =
-                        (String) shareResult.get('url');*/
-
-                /*
-                 * Optional direct-download URL
-                 */
-
-                /*sharedUrl =
-                        sharedUrl.replace(
-                                '?dl=0',
-                                '?raw=1'
-                        );
+                System.debug('Shared URL: ' + sharedUrl);
 
                 /*
                  * ---------------------------------------------
@@ -443,7 +481,7 @@ public with sharing class VMT_DropboxUploadQueueable
 
                     System.debug('im here '+ fl.Name);
 
-                    //fl.DropboxLink__c = sharedUrl;
+                    fl.DropboxLink__c = sharedUrl;
 
                     //fl.DropboxFileId__c
 
