@@ -3,7 +3,7 @@
  */
 
 @IsTest
-private class ContentDocumentTriggerTest {
+private class ContentDocumentLinkTriggerTest {
 
 
     /*
@@ -141,7 +141,7 @@ private class ContentDocumentTriggerTest {
      * -------------------------------------------------------
      */
     @IsTest
-    static void testContentDocumentTriggerEnqueuesQueueable() {
+    static void testContentDocumentLinkTriggerEnqueuesQueueable() {
 
         createDropboxSettings();
 
