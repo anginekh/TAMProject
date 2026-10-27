@@ -98,21 +98,6 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                         ? (totalBk * (share / 100)) / 12
                         : 0;
 
-                // Step 2: if the new share is higher, round up to next multiple of 5
-                Decimal result;
-                if (monthlyShare > currentBk) {
-                    Decimal remainder = Math.mod(Integer.valueOf(monthlyShare), 5);
-                    if (remainder > 0) {
-                        result = Integer.valueOf(monthlyShare) - remainder + 5;  // round UP to next 5
-                    } else {
-                        result = monthlyShare;                  // already a multiple of 5
-                    }
-                } else {
-                    result = currentBk;                          // keep the old charge
-                }
-
-                mv.BetriebskostenNeu__c = result;
-
                 // Dates for year boundaries
                 Date yearStart = Date.newInstance(Integer.valueOf(nk.Jahr__c), 1, 1);
                 Date nextYearStart = Date.newInstance(Integer.valueOf(nk.Jahr__c) + 1, 1, 1);
@@ -121,7 +106,7 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 Decimal monthlyWohnungBetriebskosten = (nk.BetriebskostenTotal__c * (mv.Wohnflaechenanteil__c / 100)) / 12;
 
 
-                //Only for this year (2024), the field 'Nebenkosten bezahlt 2024' is used. From next year, the usual field 'Nebenkosten bezahlt' applies.
+                //++Only for this year (2024), the field 'Nebenkosten bezahlt 2024' is used. From next year, the usual field 'Nebenkosten bezahlt' applies.
                 Decimal nebenkostenBezahlt = nk.Jahr__c == '2024' ? mietzahlungenByMietvertrag.get(mv.Id).NebenkostenBezahlt2024__c : mietzahlungenByMietvertrag.get(mv.Id).NebenkostenBezahlt__c;
 
 
@@ -164,29 +149,30 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
                 Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(mv.Id) ? heizkostenByMietvertrag.get(mv.Id).GesamtheizkostenWohnungNEU__c : 0;
                 Decimal oldHeizkosten = mv.HeizkostenNeu__c;
 
-                // Step 1: monthly calculated heating cost
-                Decimal newMonthlyHeizkosten = gesamtHeizkostenWohnung / monthsLivedThatYear;
+                Decimal saldo = nebenkostenBezahlt - gesamtHeizkostenWohnung - betriebskostenToPay - offeneGebuehren;
 
-                // Step 2: compare and possibly round
-                Decimal newHeizkosten;
-                if (newMonthlyHeizkosten > oldHeizkosten) {
-                    Decimal remainder = Math.mod(Integer.valueOf(newMonthlyHeizkosten), 5);
-                    if (remainder > 0) {
-                        newHeizkosten = Integer.valueOf(newMonthlyHeizkosten) - remainder + 5; // round UP to next 5
-                    } else {
-                        newHeizkosten = newMonthlyHeizkosten;                 // already a multiple of 5
-                    }
-                } else {
-                    newHeizkosten = oldHeizkosten;                      // keep current
+                if (saldo < 0) {
+                    // Step 2: if the new share is higher, round up to next multiple of 5
+                    Decimal result = monthlyShare > currentBk
+                            ? roundUpToNext5(monthlyShare)
+                            : currentBk;
+
+                    mv.BetriebskostenNeu__c = result;
+
+                    // Step 1: monthly calculated heating cost
+                    Decimal newMonthlyHeizkosten = gesamtHeizkostenWohnung / monthsLivedThatYear;
+
+                    // Step 2: compare and possibly round
+                    Decimal newHeizkosten = newMonthlyHeizkosten > oldHeizkosten
+                            ? roundUpToNext5(newMonthlyHeizkosten)
+                            : oldHeizkosten;
+
+                    mv.HeizkostenNeu__c = newHeizkosten;
+                    mietvertraegeToUpdate.add(mv);
                 }
-
-                mv.HeizkostenNeu__c = newHeizkosten;
-                mietvertraegeToUpdate.add(mv);
 
                 mietzahlungenByMietvertrag.get(mv.Id).NK_AnteilBetriebskostenTotal__c = betriebskostenToPay;
                 mietzahlungenToUpdate.add(mietzahlungenByMietvertrag.get(mv.Id));
-
-                Decimal saldo = nebenkostenBezahlt - gesamtHeizkostenWohnung - betriebskostenToPay - offeneGebuehren;
 
                 saldoToInsert.add(new SaldoNebenkosten__c(Betrag__c = saldo, Mietvertrag__c = mv.Id,
                         Typ__c = 'Saldo', Jahr__c = nk.Jahr__c));
@@ -229,6 +215,19 @@ public with sharing class NK_UpdateNKAndSaldoOnMietvertrag {
             //todo: exception handling
             System.debug('im here: exception happened ' + e + ' ' + e.getMessage());
         }*/
+    }
+
+    @TestVisible
+    private static Decimal roundUpToNext5(Decimal value) {
+        if (value == null || value <= 0) {
+            return 0;
+        }
+        Long cents = (value.setScale(2) * 100).longValue();
+        Long remainder = Math.mod(cents, 500);
+        if (remainder == 0) {
+            return Decimal.valueOf(cents) / 100;
+        }
+        return Decimal.valueOf(cents - remainder + 500) / 100;
     }
 
 }

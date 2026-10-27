@@ -6,9 +6,9 @@
  */
 public with sharing class NK_PDFCreator{
 
-    @future(callout=true)
     public static void createPDF(List<String> MietvertragIdList, String NebenkostenId){
 
+        ContentDocumentLinkTriggerControl.skipDropboxAutomation = true;
         System.debug('im here for nebenkosten 1: '  + NebenkostenId);
 
         Boolean documentCreationFailed = false;
@@ -75,7 +75,7 @@ public with sharing class NK_PDFCreator{
         singleDS.put('DatePlus42', datePlus42.format());
         //Get DS by unique identifier
         cadmus_core__Data_Source__c ds1 = [SELECT Id FROM cadmus_core__Data_Source__c
-        WHERE Name = 'inputMap'];
+        WHERE Name = 'inputMap' LIMIT 1];
 
 
         Map <Id, ContentVersion> mietvertragIdCVMap1 = new Map <Id, ContentVersion> ();
@@ -172,7 +172,6 @@ public with sharing class NK_PDFCreator{
             Decimal pastYearsSaldo = (mvIdSaldoList.containsKey(m.Id) ? mvIdSaldoList.get(m.Id).get('PastYearsSaldo') : 0);
             Decimal thisYearSaldo = (mvIdSaldoList.containsKey(m.Id) ? mvIdSaldoList.get(m.Id).get('ThisYearSaldo') : 0);
 
-
             singleDS.put('StartDate', startDate.format());
             singleDS.put('EndDate', endDate.format());
             singleDS.put('MonthsLivedThisYear', monthsLivedThisYear);
@@ -186,10 +185,75 @@ public with sharing class NK_PDFCreator{
             Gebaudeversicherung__c, Grundsteuer__c, Haftpflicht__c, Kabel__c, Muellabfuhr__c,
             Schornsteinfeger__c, Strassenreinigung_Winterdienst__c, Treppenhausreinigung__c, Wartung__c,
             Wasserversorgung__c, NebenkostenabrechnungDurchgefuehrt__c*/
+            
+            // Anteilsformeln
+            Decimal wasserversorgungAnteil = (nk.Wasserversorgung__c == null || m.Wohnflaechenanteil__c == null)
+                                            ? 0 : nk.Wasserversorgung__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal abwasser_NiederschlagAnteil = (nk.EntwaesserungNiederschlag__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.EntwaesserungNiederschlag__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal strassenreinigung_WinterdienstAnteil = (nk.Strassenreinigung_Winterdienst__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Strassenreinigung_Winterdienst__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal muellabfuhrAnteil = (nk.Muellabfuhr__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Muellabfuhr__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal allgemeinstromAnteil = (nk.Allgemeinstrom__c == null || m.Wohnflaechenanteil__c == null) 
+                                                ? 0 : nk.Allgemeinstrom__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal gebaudeversicherungAnteil = (nk.Gebaudeversicherung__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Gebaudeversicherung__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal haftpflichtversicherungAnteil = (nk.Haftpflicht__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Haftpflicht__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal GrundsteuerAnteil = (nk.Grundsteuer__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Grundsteuer__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal hausmeister_ReinigungAnteil = (nk.Treppenhausreinigung__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Treppenhausreinigung__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal schornsteinfegerAnteil = (nk.Schornsteinfeger__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Schornsteinfeger__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal wartungAnteil = (nk.Wartung__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Wartung__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal kabelAnteil = (nk.Kabel__c == null || m.Wohnflaechenanteil__c == null)
+                                                ? 0 : nk.Kabel__c * (m.Wohnflaechenanteil__c / 100) / 12 * monthsLivedThisYear;
+            Decimal gesamtbetriebskostenAnteil = wasserversorgungAnteil
+                + abwasser_NiederschlagAnteil
+                + strassenreinigung_WinterdienstAnteil
+                + muellabfuhrAnteil
+                + allgemeinstromAnteil
+                + gebaudeversicherungAnteil
+                + haftpflichtversicherungAnteil
+                + GrundsteuerAnteil
+                + hausmeister_ReinigungAnteil
+                + schornsteinfegerAnteil
+                + wartungAnteil
+                + kabelAnteil;
+
+            Decimal gesamtbetriebskostenBetrag = nk.BetriebskostenTotal__c == null
+                ? 0
+                : nk.BetriebskostenTotal__c;
+
+            Decimal kabelValue = nk.Kabel__c == null ? 0 : nk.Kabel__c;
+            Decimal schornsteinfegerValue = nk.Schornsteinfeger__c == null ? 0 : nk.Schornsteinfeger__c;
+            Decimal wartungValue = nk.Wartung__c == null ? 0 : nk.Wartung__c;
+
+            singleDS.put('WasserAnteil', wasserversorgungAnteil); //VERSORNUNG
+            singleDS.put('Abwasser_NiederschlagAnteil', abwasser_NiederschlagAnteil);
+            singleDS.put('Strassenreinigung_WinterdienstAnteil', strassenreinigung_WinterdienstAnteil);
+            singleDS.put('MuellabfuhrAnteil', muellabfuhrAnteil);
+            singleDS.put('AllgemeinstromAnteil', allgemeinstromAnteil);
+            singleDS.put('GebaudeversicherungAnteil', gebaudeversicherungAnteil);
+            singleDS.put('HaftpflichtversicherungAnteil', haftpflichtversicherungAnteil);
+            singleDS.put('GrundsteuerAnteil', GrundsteuerAnteil);
+            singleDS.put('Hausmeister_ReinigungAnteil', hausmeister_ReinigungAnteil);
+            singleDS.put('SchornsteinfegerAnteil', schornsteinfegerAnteil);
+            singleDS.put('WartungAnteil', wartungAnteil);
+            singleDS.put('KabelAnteil', kabelAnteil);
+            singleDS.put('GesamtbetriebskostenAnteil', gesamtbetriebskostenAnteil);
+            singleDS.put('GesamtbetriebskostenBetrag', gesamtbetriebskostenBetrag);
+            singleDS.put('KabelValue', kabelValue);
+            singleDS.put('SchornsteinfegerValue', schornsteinfegerValue);
+            singleDS.put('WartungValue', wartungValue);
 
             Decimal gesamtHeizkostenWohnung = heizkostenByMietvertrag.containsKey(m.Id) ? heizkostenByMietvertrag.get(m.Id).GesamtheizkostenWohnungNEU__c : 0;
-
-            //singleDS.put('Verbrauch', verbrauch);
+            Decimal verbrauch  = gesamtbetriebskostenAnteil + gesamtHeizkostenWohnung;
+            
+            singleDS.put('Verbrauch', verbrauch);
             singleDS.put('GesamtHeizkostenWohnung', gesamtHeizkostenWohnung);
 
             inputMap.put(ds1.Id, singleDS);
@@ -207,6 +271,8 @@ public with sharing class NK_PDFCreator{
             if (docConfigMap.containsKey(docConfigName) && docConfigMap.get(docConfigName) != null) {
                 cdm.docConfigId = docConfigMap.get(docConfigName).Id;
                 cdm.objectId = m.Id;
+                // Batch saves the ContentVersion itself; force BASE64 so the Doc Config delivery (FILES, used by the UI tab) does not create a duplicate file
+                cdm.deliveryOverwrite = 'BASE64';
 
                 // Call PDF Butler
                 if (Test.isRunningTest()) {
@@ -233,6 +299,7 @@ public with sharing class NK_PDFCreator{
                     // generate Excel version
                     cdm2.docConfigId = docConfigMap.get('NK_Abrechnung_Excel').Id;
                     cdm2.objectId = m.Id;
+                    cdm2.deliveryOverwrite = 'BASE64';
                     result2 = cadmus_core.ConvertController.convertWithWrapperAndInputMap(cdm2, inputMap);
                     if (result2 == null || result.result == 'FAILED') { documentCreationFailed = true;
                         System.debug('im here 8 : error');
@@ -293,6 +360,7 @@ public with sharing class NK_PDFCreator{
         }
 
         insert contentDocumentLinks;
+        ContentDocumentLinkTriggerControl.skipDropboxAutomation = false;
 
     }
 
